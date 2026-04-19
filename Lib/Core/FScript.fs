@@ -93,7 +93,7 @@ module FScript =
         data.Keys <- name :: data.Keys
         data.Scripts <- scripts @ data.Scripts
         
-    let contains (name : string) (obj : GodotObject) =
+    let private containsKey (name : string) (obj : GodotObject) =
         let result = monad {
             let! data = obj |> getSomeMeta<FScriptData> fScriptMeta
             if data.Keys |> List.contains name then
@@ -104,13 +104,32 @@ module FScript =
         
         result <> None
 
+    let private getMetaAndGroupListWith filter (obj : GodotObject) =
+        obj |> getMetaList
+
+        |> List.ofSeq
+
+        |> List.append (
+            match obj with
+            | :? Node as n -> n.GetGroups () |> List.ofSeq
+            | _ -> []
+        )
+
+        |> List.choose (fun m ->
+            let s = m |> string
+            if s |> filter then
+                Some s
+            else
+                None
+        )
+
     let init (obj : GodotObject) =
         let arr =
             obj
             
             |> getMetaAndGroupListWith (fun s -> s.StartsWith "fs_" && s.Length > 3)
             |> List.map (fun s -> s[3..])
-            |> List.filter (fun s -> obj |> contains s |> not)
+            |> List.filter (fun s -> obj |> containsKey s |> not)
         
         for m in arr do
             try
@@ -138,3 +157,9 @@ module FScript =
             |> Option.map (fun s -> s :?> 'a)
             |> Option.toResultWith $"{obj}: the script {typeof<'a>} was not found"
     }
+    
+    let getSome<'a> (obj: GodotObject) =
+        obj |> get<'a> |> Option.ofResult
+        
+    let contains<'a> (obj: GodotObject) =
+        obj |> getSome<'a> |> Option.isSome

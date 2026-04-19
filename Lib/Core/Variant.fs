@@ -1,15 +1,19 @@
 module Lib.Core.Variant
 
+open System
 open Godot
 
-let toType<[<MustBeVariant>] 'a> (variant : Variant) =
-    variant.As<'a> ()
+let toType<'a> (variant : Variant) =
+    match variant.VariantType with
     
-let toSomeType<[<MustBeVariant>] 'a> (variant : Variant) =
+    | Variant.Type.Nil -> raise (Exception("Variant: cannot convert a null value."))
+    | _ -> variant.As<'a> ()
+    
+let toSome<'a> (variant : Variant) =
     try
         toType<'a> variant |> Some
     with
     | _ -> None
 
-let fromType<[<MustBeVariant>] 'a> (value: 'a) =
+let from (value: 'a) =
     Variant.From &value
