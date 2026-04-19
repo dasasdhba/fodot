@@ -1,6 +1,5 @@
 module Lib.Test
 
-open FSharpPlus
 open Godot
 open Lib.Core
 
@@ -11,13 +10,16 @@ type TestScript(node : Node) =
         GD.Print $"Hello from FSharp script, in node {name}"
         name
         
-    let testExport () = monad {
-        let! ex = node |> Register.getExportedNode "test_node"
-        GD.Print $"Exported node: {ex.Name}"
-    }
+    let testGetData () =
+        let script = node |> FScript.get<TestScript>
+        match script with
+        
+        | Ok s ->
+            GD.Print $"Get script data {s.TestData}"
+        | Error e ->
+            GD.Print $"Get script data failed: {e}"
+            
+    let testGetAfterReady=
+        node.add_Ready (fun () -> testGetData ())
     
-    let testAfterReady =
-        node.add_Ready (fun () ->
-            GD.Print "Ready."
-            testExport () |> ignore
-        )
+    member val TestData = "哇哈哈"

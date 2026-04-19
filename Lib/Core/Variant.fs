@@ -1,4 +1,4 @@
-module Lib.Moon.Variant
+module Lib.Core.Variant
 
 open Godot
 

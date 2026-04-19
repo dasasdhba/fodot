@@ -6,10 +6,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Moon\Variant.fs" />
-        <Compile Include="Moon\GodotObject.fs" />
-        <Compile Include="Core\Script.fs" />
-        <Compile Include="Core\Register.fs" />
+        <Compile Include="Core\Variant.fs" />
+        <Compile Include="Core\GodotObject.fs" />
+        <Compile Include="Core\FScript.fs" />
         <Compile Include="Test.fs" />
     </ItemGroup>
 

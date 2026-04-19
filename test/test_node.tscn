@@ -2,4 +2,4 @@
 
 [node name="TestNode" type="Node2D" unique_id=2109641576 groups=["fs_test_script"]]
 
-[node name="Node" type="Node" parent="." unique_id=1311966091 groups=["ex_test_node"]]
+[node name="Node" type="Node" parent="." unique_id=1311966091]

@@ -1,4 +1,4 @@
-module Lib.Moon.GodotObject
+module Lib.Core.GodotObject
 
 open System
 open Godot
@@ -38,3 +38,22 @@ let getMetaWithDefault<[<MustBeVariant>] 'a> (name : string) (def : Lazy<'a>) (o
         let ref = &value
         obj |> setMeta name (Variant.From &ref)
         def.Value
+
+let getMetaAndGroupListWith filter (obj : GodotObject) =
+    obj |> getMetaList
+    
+    |> List.ofSeq
+    
+    |> List.append (
+        match obj with
+        | :? Node as n -> n.GetGroups () |> List.ofSeq
+        | _ -> []
+    )
+    
+    |> List.choose (fun m ->
+        let s = m |> string
+        if s |> filter then
+            Some s
+        else
+            None
+    )
