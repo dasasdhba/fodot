@@ -86,7 +86,7 @@ module FScript =
         member val Keys : string list = [] with get, set
         member val Scripts : Object list = [] with get, set
 
-    let private fScriptMeta = "_FScriptData"
+    let private fScriptMeta = "_fs_script_data"
 
     let private updateScriptData (name : string) (scripts : Object list) (obj : GodotObject) =
         let data = obj |> getMetaWithDefault fScriptMeta (lazy new FScriptData())
@@ -123,7 +123,7 @@ module FScript =
                 None
         )
 
-    let init (obj : GodotObject) =
+    let update (obj : GodotObject) =
         let arr =
             obj
             
@@ -142,6 +142,12 @@ module FScript =
             with
             
             | ex -> GD.PushError $"{obj}: failed to create script {m}: {ex}"
+            
+    let init (obj : GodotObject) =
+        if obj |> hasMeta fScriptMeta then
+            ()
+        else
+            obj |> update
             
     let get<'a> (obj : GodotObject) = monad {
         let! data =
