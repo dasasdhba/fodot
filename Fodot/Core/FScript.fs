@@ -1,11 +1,11 @@
-namespace Lib.Core
+namespace Fodot.Core
 
 open System
 open System.Collections.Concurrent
 open System.Reflection
 open FSharpPlus
 open Godot
-open Lib.Core.GodotObject
+open Fodot.Core.GodotObject
 
 [<AttributeUsage(AttributeTargets.Class, AllowMultiple = false)>]
 type FScriptAttribute(name: string) =
@@ -55,7 +55,7 @@ module FScript =
             cache.GetOrAdd(name, fun key ->
                 let has, result = typeMap.Value.TryGetValue key
                 if has |> not then
-                    Result.Error $"the script {name} was not found in F# library"
+                    Result.Error $"the script {name} was not found in F# Fodotrary"
                 else
                     Ok result
             )
@@ -122,6 +122,17 @@ module FScript =
             else
                 None
         )
+        
+    let private getCallbackFScripts (obj : GodotObject) =
+        let getCallArrWith (name : string) =
+            match obj |> callSome<string[]> name [||] with
+            
+            | Some arr -> arr |> List.ofSeq
+            | None -> []
+        
+        getCallArrWith "_get_fcripts"
+        
+        |> List.append (getCallArrWith "_GetFScripts")
 
     let update (obj : GodotObject) =
         let arr =
@@ -129,6 +140,7 @@ module FScript =
             
             |> getMetaAndGroupListWith (fun s -> s.StartsWith "fs_" && s.Length > 3)
             |> List.map (fun s -> s[3..])
+            |> List.append (obj |> getCallbackFScripts)
             |> List.filter (fun s -> obj |> containsKey s |> not)
         
         for m in arr do

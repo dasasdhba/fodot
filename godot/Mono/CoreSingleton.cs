@@ -14,9 +14,6 @@ public partial class CoreSingleton : Node
     public override void _EnterTree()
     {
         base._EnterTree();
-        GetTree().NodeAdded += node =>
-        {
-            Lib.Core.FScript.init(node);
-        };
+        Fodot.Core.Engine.getTree();
     }
 }

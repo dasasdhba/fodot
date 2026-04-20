@@ -1,4 +1,4 @@
-module Lib.Core.Node
+module Fodot.Core.Node
 
 open Godot
 
@@ -17,3 +17,7 @@ let rec getChildrenRecWith filter (node: Node) =
 
 let getChildrenRec (node: Node) =
     node |> getChildrenRecWith (fun _ -> true)
+    
+let initScripts (node: Node) =
+    node |> FScript.init
+    node |> getChildrenRec |> List.iter (fun c -> c |> FScript.init)

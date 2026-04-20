@@ -1,7 +1,7 @@
-module Lib.Core.PackedScene
+module Fodot.Core.PackedScene
 
 open Godot
-open Lib.Core.Node
+open Fodot.Core.Node
 
 let private instantiateLock = obj()
 
@@ -10,7 +10,7 @@ let instantiateWith gen (packedScene: PackedScene) =
         lock instantiateLock (fun () ->
             packedScene.Instantiate(gen)
         )
-    node |> getChildrenRec |> List.iter FScript.init
+    node |> initScripts
     node
     
 let instantiate (packedScene: PackedScene)  =
@@ -18,5 +18,5 @@ let instantiate (packedScene: PackedScene)  =
         lock instantiateLock (fun () ->
             packedScene.Instantiate()
         )
-    node |> getChildrenRec |> List.iter FScript.init
+    node |> initScripts
     node

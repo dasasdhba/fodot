@@ -1,4 +1,4 @@
-module Lib.Core.Variant
+module Fodot.Core.Variant
 
 open System
 open Godot

@@ -1,4 +1,4 @@
-module Lib.Core.GodotObject
+module Fodot.Core.GodotObject
 
 open System
 open Godot
@@ -88,3 +88,17 @@ let setWithMeta (prop : string) (value : 'a) (obj : GodotObject) =
         obj |> set prop value
     else
         obj |> setMeta meta value
+        
+// method
+
+let hasMethod (method : string) (obj : GodotObject) =
+    obj.HasMethod(method)
+    
+let call<'a> (method : string) (args : Variant[]) (obj : GodotObject) =
+    obj.Call (new StringName(method), args) |> Variant.toType<'a>
+    
+let callSome<'a> (method : string) (args : Variant[]) (obj : GodotObject) =
+    if obj |> hasMethod method |> not then
+        None
+    else
+        obj.Call (new StringName(method), args) |> Variant.toSome<'a>

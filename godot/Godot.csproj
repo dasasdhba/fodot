@@ -6,6 +6,6 @@
     <RootNamespace>GodotFSharp</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="Lib\Lib.fsproj" />
+    <ProjectReference Include="..\Fodot\Fodot.fsproj" />
   </ItemGroup>
 </Project>

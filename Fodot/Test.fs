@@ -1,8 +1,8 @@
-module Lib.Test
+module Fodot.Test
 
 open Godot
-open Lib.Core
-open Lib.Core.GodotObject
+open Fodot.Core
+open Fodot.Core.GodotObject
 
 [<FScript("test_script")>]
 type TestScript(node : Node) =

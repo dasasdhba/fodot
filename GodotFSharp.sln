@@ -1,8 +1,8 @@
 ﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Godot", "Godot.csproj", "{21485A41-4861-4A58-A0B8-098AF96C01A0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Godot", "godot\Godot.csproj", "{21485A41-4861-4A58-A0B8-098AF96C01A0}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Lib", "Lib\Lib.fsproj", "{F80DA405-AE12-4919-9C94-4DCEBD6773E8}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fodot", "Fodot\Fodot.fsproj", "{F80DA405-AE12-4919-9C94-4DCEBD6773E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
