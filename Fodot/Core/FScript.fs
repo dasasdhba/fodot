@@ -4,6 +4,7 @@ open System
 open System.Collections.Concurrent
 open System.Reflection
 open FSharpPlus
+open Fodot
 open Godot
 open Fodot.Core.GodotObject
 
@@ -55,7 +56,7 @@ module FScript =
             cache.GetOrAdd(name, fun key ->
                 let has, result = typeMap.Value.TryGetValue key
                 if has |> not then
-                    Result.Error $"the script {name} was not found in F# Fodotrary"
+                    Result.Error $"the script {name} was not found in F# library"
                 else
                     Ok result
             )
@@ -130,7 +131,7 @@ module FScript =
             | Some arr -> arr |> List.ofSeq
             | None -> []
         
-        getCallArrWith "_get_fcripts"
+        getCallArrWith "_get_fscripts"
         
         |> List.append (getCallArrWith "_GetFScripts")
 
@@ -153,7 +154,7 @@ module FScript =
                     raise (Exception e)
             with
             
-            | ex -> GD.PushError $"{obj}: failed to create script {m}: {ex}"
+            | ex -> Logger.pushError $"{obj}: failed to create script {m}: {ex}"
             
     let init (obj : GodotObject) =
         if obj |> hasMeta fScriptMeta then

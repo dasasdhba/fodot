@@ -11,15 +11,30 @@ let setMeta (name : string) (var : 'a) (obj : GodotObject) =
 let getMeta<'a> (name : string) (obj : GodotObject) =
     obj.GetMeta(name) |> Variant.toType<'a>
     
+let getMetaArray<'a> (name : string) (obj : GodotObject) =
+    obj.GetMeta(name) |> Variant.toArray<'a>
+    
+let getMetaDictionary<'a, 'b> (name : string) (obj : GodotObject) =
+    obj.GetMeta(name) |> Variant.toDictionary<'a, 'b>
+    
 let hasMeta (name : string) (obj : GodotObject) =
     obj.HasMeta(name)
     
-let getSomeMeta<'a> (name : string) (obj : GodotObject) =
+let private getSomeMetaWith converter (name : string) (obj : GodotObject) =
     if obj |> hasMeta name then
-        obj.GetMeta(name) |> Variant.toSome<'a>
+        obj.GetMeta(name) |> converter
     else
         None
     
+let getSomeMeta<'a> (name : string) (obj : GodotObject) =
+    obj |> getSomeMetaWith Variant.toSome<'a> name
+    
+let getSomeMetaArray<'a> (name : string) (obj : GodotObject) =
+    obj |> getSomeMetaWith Variant.toSomeArray<'a> name
+
+let getSomeMetaDictionary<'a, 'b> (name : string) (obj : GodotObject) =
+    obj |> getSomeMetaWith Variant.toSomeDictionary<'a, 'b> name
+
 let removeMeta (name : string) (obj : GodotObject) =
     if obj |> hasMeta name then
         obj.RemoveMeta(name)
@@ -30,12 +45,21 @@ let removeMeta (name : string) (obj : GodotObject) =
 let getMetaList (obj : GodotObject) =
     obj.GetMetaList()
     
-let getMetaWithDefault (name : string) (def : Lazy<'a>) (obj : GodotObject) =
+let private getDefaultMetaWith getter (name : string) (def : Lazy<'a>) (obj : GodotObject) =
     if obj |> hasMeta name then
-        obj |> getMeta name
+        obj |> getter name
     else
         obj |> setMeta name def.Value
         def.Value
+    
+let getMetaWithDefault<'a> (name : string) (def : Lazy<'a>) (obj : GodotObject) =
+    obj |> getDefaultMetaWith getMeta name def
+        
+let getMetaArrayWithDefault<'a> (name : string) (def : Lazy<Collections.Array<'a>>) (obj : GodotObject) =
+    obj |> getDefaultMetaWith getMetaArray name def
+        
+let getMetaDictionaryWithDefault<'a, 'b> (name : string) (def : Lazy<Collections.Dictionary<'a, 'b>>) (obj : GodotObject) =
+    obj |> getDefaultMetaWith getMetaDictionary name def
     
 // property get set
 
@@ -52,17 +76,35 @@ let getPropertyList (obj : GodotObject) =
 let hasProperty (prop : string) (obj : GodotObject) =
     obj |> getPropertyList |> Array.contains prop
 
-let get<'a> (prop : string) (obj : GodotObject) =
+let getWith converter (prop : string) (obj : GodotObject) =
     if obj |> hasProperty prop |> not then
         raise (Exception($"{obj}: Property {prop} not found."))
     else
-        obj.Get(prop) |> Variant.toType<'a>
+        obj.Get(prop) |> converter
+
+let get<'a> (prop : string) (obj : GodotObject) =
+    obj |> getWith Variant.toType<'a> prop
     
-let getSome<'a> (prop : string) (obj : GodotObject) =
+let getArray<'a> (prop : string) (obj : GodotObject) =
+    obj |> getWith Variant.toArray<'a> prop
+    
+let getDictionary<'a, 'b> (prop : string) (obj : GodotObject) =
+    obj |> getWith Variant.toDictionary<'a, 'b> prop
+    
+let private getSomeWith converter (prop : string) (obj : GodotObject) =
     if obj |> hasProperty prop |> not then
         None
     else
-        obj.Get(prop) |> Variant.toSome<'a>
+        obj.Get(prop) |> converter
+    
+let getSome<'a> (prop : string) (obj : GodotObject) =
+    obj |> getSomeWith Variant.toSome<'a> prop
+    
+let getSomeArray<'a> (prop : string) (obj : GodotObject) =
+    obj |> getSomeWith Variant.toSomeArray<'a> prop
+    
+let getSomeDictionary<'a, 'b> (prop : string) (obj : GodotObject) =
+    obj |> getSomeWith Variant.toSomeDictionary<'a, 'b> prop
 
 let set (prop : string) (value : 'a) (obj : GodotObject) =
     if obj |> hasProperty prop |> not then
@@ -72,15 +114,24 @@ let set (prop : string) (value : 'a) (obj : GodotObject) =
 
 let propGetSetMeta = "_fs_GodotObject_prop_get_set"
 
-let getWithMeta (prop : string) (def : Lazy<'a>) (obj : GodotObject) =
+let getFallbackMetaWith getter getterSome getterDefault (prop : string) (def : Lazy<'a>) (obj : GodotObject) =
     let meta = $"{propGetSetMeta}_{prop}"
     if obj |> hasMeta meta then
-        obj |> getMeta meta
+        obj |> getter meta
     else
-        match obj |> getSome prop with
+        match obj |> getterSome prop with
         
         | Some v -> v
-        | None -> getMetaWithDefault meta def obj
+        | None -> getterDefault meta def obj
+
+let getWithMeta (prop : string) (def : Lazy<'a>) (obj : GodotObject) =
+    obj |> getFallbackMetaWith getMeta getSome getMetaWithDefault prop def
+    
+let getArrayWithMeta (prop : string) (def : Lazy<Collections.Array<'a>>) (obj : GodotObject) =
+    obj |> getFallbackMetaWith getMetaArray getSomeArray getMetaArrayWithDefault prop def
+
+let getDictionaryWithMeta (prop : string) (def : Lazy<Collections.Dictionary<'a, 'b>>) (obj : GodotObject) =
+    obj |> getFallbackMetaWith getMetaDictionary getSomeDictionary getMetaDictionaryWithDefault prop def
         
 let setWithMeta (prop : string) (value : 'a) (obj : GodotObject) =
     let meta = $"{propGetSetMeta}_{prop}"

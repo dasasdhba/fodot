@@ -9,11 +9,27 @@ let toType<'a> (variant : Variant) =
     | Variant.Type.Nil -> raise (Exception("Variant: cannot convert a null value."))
     | _ -> variant.As<'a> ()
     
-let toSome<'a> (variant : Variant) =
+let toArray<'a> (variant : Variant) =
+    variant.AsGodotArray<'a> ()
+    
+let toDictionary<'a, 'b> (variant : Variant) =
+    variant.AsGodotDictionary<'a, 'b> ()
+    
+let private toSomeTypeWith converter (variant : Variant) =
     try
-        toType<'a> variant |> Some
+        converter variant |> Some
     with
+    
     | _ -> None
-
+    
+let toSome<'a> (variant : Variant) =
+    variant |> toSomeTypeWith toType<'a>
+    
+let toSomeArray<'a> (variant : Variant) =
+    variant |> toSomeTypeWith toArray<'a>
+    
+let toSomeDictionary<'a, 'b> (variant : Variant) =
+    variant |> toSomeTypeWith toDictionary<'a, 'b>
+    
 let from (value: 'a) =
     Variant.From &value

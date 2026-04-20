@@ -5,9 +5,7 @@ open Godot
 let private tree =
     lazy (
         let t = Engine.GetMainLoop () :?> SceneTree
-        t.add_NodeAdded (fun node ->
-            node |> FScript.init
-        )
+        t.add_NodeAdded (fun node -> node |> FScript.init)
         t
     )
     

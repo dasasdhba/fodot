@@ -11,18 +11,26 @@ config_version=5
 [application]
 
 config/name="Godot FSharp"
-run/main_scene="uid://qm4w5vrfodyf"
+run/main_scene="uid://bwtd58quhjmq"
 config/features=PackedStringArray("4.6", "C#", "GL Compatibility")
 config/icon="res://icon.svg"
 
 [autoload]
 
-CoreSingleton="*uid://dx61yw6jvmbhp"
+FodotBridge="*uid://cbubwvvfryogv"
 
 [dotnet]
 
 project/assembly_name="Godot"
-project/solution_directory="..\\"
+project/solution_directory="../"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/fodot/plugin.cfg")
+
+[fodot]
+
+general/main_scene=""
 
 [physics]
 

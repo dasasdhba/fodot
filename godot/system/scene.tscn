@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://di5yspq282gyi"]
+
+[ext_resource type="Script" uid="uid://pi8ontpo1cha" path="res://system/scripts/scene_manager.gd" id="1_iccfs"]
+
+[node name="Scene" type="Node" unique_id=282496909 groups=["fs_scene_singleton"]]
+script = ExtResource("1_iccfs")
+viewports = Array[NodePath]([NodePath("SubViewportContainer/SubViewport")])
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="." unique_id=1117205934]
+offset_right = 1152.0
+offset_bottom = 648.0
+
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer" unique_id=1735346637]
+handle_input_locally = false
+size = Vector2i(1152, 648)
+render_target_update_mode = 4
