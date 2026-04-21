@@ -116,3 +116,24 @@ type GDMetaDictionary<'a, 'b> =
             PropName = prop
             Default = def
         }
+        
+module GD =
+    
+    let private loadLock = obj()
+    
+    let load (path : string) =
+        lock loadLock (fun () ->
+            GD.Load path
+        )
+        
+    let loadAs<'a when 'a :> Resource> (path : string) =
+        match load path with
+        
+        | :? 'a as obj -> obj
+        | _ -> failwith $"Failed loading {path} as {typeof<'a>}"
+        
+    let loadSome<'a when 'a :> Resource> (path : string) =
+        try
+            loadAs<'a> path |> Some
+        with
+        | _ -> None

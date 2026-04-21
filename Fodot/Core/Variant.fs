@@ -1,12 +1,11 @@
 module Fodot.Core.Variant
 
-open System
 open Godot
 
 let toType<'a> (variant : Variant) =
     match variant.VariantType with
     
-    | Variant.Type.Nil -> raise (Exception("Variant: cannot convert a null value."))
+    | Variant.Type.Nil -> failwith "Variant: cannot convert a null value."
     | _ -> variant.As<'a> ()
     
 let toArray<'a> (variant : Variant) =

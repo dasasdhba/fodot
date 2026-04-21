@@ -154,7 +154,7 @@ module FScript =
                     raise (Exception e)
             with
             
-            | ex -> Logger.pushError $"{obj}: failed to create script {m}: {ex}"
+            | ex -> Logger.pushError $"{obj}: failed creating script {m}: {ex}"
             
     let init (obj : GodotObject) =
         if obj |> hasMeta fScriptMeta then

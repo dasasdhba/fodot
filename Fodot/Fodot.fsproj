@@ -11,8 +11,8 @@
         <Compile Include="Core\GodotObject.fs" />
         <Compile Include="Core\GD.fs" />
         <Compile Include="Core\FScript.fs" />
-        <Compile Include="Core\Engine.fs" />
         <Compile Include="Core\Node.fs" />
+        <Compile Include="Core\Engine.fs" />
         <Compile Include="Core\PackedScene.fs" />
         <Compile Include="System\Singleton.fs" />
         <Compile Include="System\SceneManager.fs" />

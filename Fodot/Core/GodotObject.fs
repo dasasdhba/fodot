@@ -78,7 +78,7 @@ let hasProperty (prop : string) (obj : GodotObject) =
 
 let getWith converter (prop : string) (obj : GodotObject) =
     if obj |> hasProperty prop |> not then
-        raise (Exception($"{obj}: Property {prop} not found."))
+        failwith $"{obj}: Property {prop} not found."
     else
         obj.Get(prop) |> converter
 
@@ -108,7 +108,7 @@ let getSomeDictionary<'a, 'b> (prop : string) (obj : GodotObject) =
 
 let set (prop : string) (value : 'a) (obj : GodotObject) =
     if obj |> hasProperty prop |> not then
-        raise (Exception($"{obj}: Property {prop} not found."))
+        failwith $"{obj}: Property {prop} not found."
     else
         obj.Set(prop, value |> Variant.from)
 
@@ -147,6 +147,9 @@ let hasMethod (method : string) (obj : GodotObject) =
     
 let call<'a> (method : string) (args : Variant[]) (obj : GodotObject) =
     obj.Call (new StringName(method), args) |> Variant.toType<'a>
+    
+let callDeferred (method : string) (args : Variant[]) (obj : GodotObject) =
+    obj.CallDeferred (new StringName(method), args) |> ignore
     
 let callSome<'a> (method : string) (args : Variant[]) (obj : GodotObject) =
     if obj |> hasMethod method |> not then
