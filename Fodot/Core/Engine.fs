@@ -63,7 +63,29 @@ let private hasIdleProcess (node: Node) =
 let private hasPhysicsProcess (node: Node) =
     (node |> getProcessData).HasPhysicsProcess ()
 
+let private updateNewlyWith (updater : unit -> unit) (node : Node) =
+    if node.IsInsideTree () then
+        updater ()
+    else
+        node.Connect (
+            Node.SignalName.TreeEntered,
+            Callable.From updater,
+            GodotObject.ConnectFlags.OneShot |> uint32
+        ) |> ignore
+
+let mutable private cachedIdleUpdate = false
+let mutable private cachedPhysicsUpdate = false
+
+let private updateNewly (physics : bool) (node: Node) =
+    if physics then
+        if node |> hasPhysicsProcess |> not then
+            node |> updateNewlyWith (fun () -> cachedPhysicsUpdate <- true)
+    else
+        if node |> hasIdleProcess |> not then
+            node |> updateNewlyWith (fun () -> cachedIdleUpdate <- true)
+
 let addProcess (f : unit -> unit) (physics : bool) (node: Node) =
+    node |> updateNewly physics
     let data = node |> getProcessData
     let dict = if physics then data.PhysicsDict else data.IdleDict
     let id = Guid.NewGuid ()
@@ -71,6 +93,7 @@ let addProcess (f : unit -> unit) (physics : bool) (node: Node) =
     id
     
 let addDeltaProcess (f : float -> unit) (physics : bool) (node: Node) =
+    node |> updateNewly physics
     let data = node |> getProcessData
     let dict = if physics then data.PhysicsDeltaDict else data.IdleDeltaDict
     let id = Guid.NewGuid ()
@@ -108,11 +131,15 @@ let removeProcess (id: Guid) (node: Node) =
 let mutable private cachedProcessNodes : Node list = []
 let mutable private cachedPhysicsProcessNodes : Node list = []
 
-let private updateProcessCache (tree: SceneTree) =
+let private updateIdleProcessCache (tree: SceneTree) =
     let root = tree.GetCurrentScene ()
     
     cachedProcessNodes <-
         root |> getChildrenAndSelfRecWith (fun n -> n.CanProcess () && n |> hasIdleProcess)
+    
+let private updatePhysicsProcessCache (tree: SceneTree) =
+    let root = tree.GetCurrentScene ()
+    
     cachedPhysicsProcessNodes <-
         root |> getChildrenAndSelfRecWith (fun n -> n.CanProcess () && n |> hasPhysicsProcess)
         
@@ -130,11 +157,18 @@ let private tree =
     lazy (
         let t = Engine.GetMainLoop () :?> SceneTree
         t.add_NodeAdded (fun node -> node |> FScript.init)
-        t.add_TreeChanged (fun () -> updateProcessCache t)
         t.add_ProcessFrame (fun () ->
+            if cachedIdleUpdate then
+                cachedIdleUpdate <- false
+                updateIdleProcessCache t
+            
             cachedProcessNodes |> List.iter (fun n -> n |> doIdleProcess)
         )
         t.add_PhysicsFrame (fun () ->
+            if cachedPhysicsUpdate then
+                cachedPhysicsUpdate <- false
+                updatePhysicsProcessCache t
+            
             cachedPhysicsProcessNodes |> List.iter (fun n -> n |> doPhysicsProcess)
         )
         
