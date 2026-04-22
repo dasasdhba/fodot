@@ -156,13 +156,13 @@ let private updateIdleProcessCache (tree: SceneTree) =
     let root = tree.GetCurrentScene ()
     
     cachedProcessNodes <-
-        root |> getChildrenAndSelfRecWith (fun n -> n.CanProcess () && n |> hasIdleProcess)
+        root |> getChildrenAndSelfRecWith (fun n -> n |> hasIdleProcess)
     
 let private updatePhysicsProcessCache (tree: SceneTree) =
     let root = tree.GetCurrentScene ()
     
     cachedPhysicsProcessNodes <-
-        root |> getChildrenAndSelfRecWith (fun n -> n.CanProcess () && n |> hasPhysicsProcess)
+        root |> getChildrenAndSelfRecWith (fun n -> n |> hasPhysicsProcess)
         
 let private doProcess physics (node: Node) =
     let data = node |> getProcessData physics
@@ -179,14 +179,20 @@ let private tree =
                 cachedIdleUpdate <- false
                 updateIdleProcessCache t
             
-            cachedProcessNodes |> List.iter (fun n -> n |> doProcess false)
+            cachedProcessNodes |> List.iter (fun n ->
+                if n.CanProcess () then
+                    n |> doProcess false
+            )
         )
         t.add_PhysicsFrame (fun () ->
             if cachedPhysicsUpdate then
                 cachedPhysicsUpdate <- false
                 updatePhysicsProcessCache t
             
-            cachedPhysicsProcessNodes |> List.iter (fun n -> n |> doProcess true)
+            cachedPhysicsProcessNodes |> List.iter (fun n ->
+                if n.CanProcess () then
+                    n |> doProcess true
+            )
         )
         
         t
