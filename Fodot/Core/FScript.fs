@@ -84,20 +84,20 @@ module FScript =
 
     type private FScriptData() =
         inherit Resource()
-        member val Keys : string list = [] with get, set
-        member val Scripts : Object list = [] with get, set
+        member val Keys = ResizeArray<string>() with get, set
+        member val Scripts = ResizeArray<Object>() with get, set
 
     let private fScriptMeta = "_fs_script_data"
 
     let private updateScriptData (name : string) (scripts : Object list) (obj : GodotObject) =
         let data = obj |> getMetaWithDefault fScriptMeta (lazy new FScriptData())
-        data.Keys <- name :: data.Keys
-        data.Scripts <- scripts @ data.Scripts
+        data.Keys.Add name
+        data.Scripts.AddRange scripts
         
     let private containsKey (name : string) (obj : GodotObject) =
         let result = monad {
             let! data = obj |> getSomeMeta<FScriptData> fScriptMeta
-            if data.Keys |> List.contains name then
+            if data.Keys.Contains name then
                 ()
             else
                 return! None

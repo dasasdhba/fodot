@@ -30,7 +30,7 @@ let rec getChildrenRecWith filter (node: Node) =
     
     |> List.ofSeq
     |> List.fold (fun acc child ->
-        let acc = if filter child then child :: acc else acc
+        let acc = if filter child then acc @ [child] else acc
         acc |> List.append (child |> getChildrenRecWith filter)
     ) []
 
