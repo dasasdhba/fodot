@@ -2,6 +2,7 @@ module Fodot.Core.Engine
 
 open System
 open System.Collections.Generic
+open Fodot.Core.GodotObject
 open Fodot.Core.Node
 open Godot
 
@@ -9,93 +10,102 @@ open Godot
 
 type private ProcessData =
     {
-        IdleDict : Dictionary<Guid, unit -> unit>
-        IdleDeltaDict : Dictionary<Guid, float -> unit>
-        PhysicsDict : Dictionary<Guid, unit -> unit>
-        PhysicsDeltaDict : Dictionary<Guid, float -> unit>
+        Physics : bool
+        Process : Dictionary<Guid, unit -> unit>
+        DeltaProcess : Dictionary<Guid, float -> unit>
     }
-    static member New () = {
-        IdleDict = Dictionary<Guid, unit -> unit> ()
-        IdleDeltaDict = Dictionary<Guid, float -> unit> ()
-        PhysicsDict = Dictionary<Guid, unit -> unit> ()
-        PhysicsDeltaDict = Dictionary<Guid, float -> unit> ()
+    static member New physics = {
+        Physics = physics
+        Process = Dictionary<Guid, unit -> unit>()
+        DeltaProcess = Dictionary<Guid, float -> unit>()
     }
     
-    member this.HasIdleProcess () =
-        this.IdleDeltaDict.Count > 0 || this.IdleDict.Count > 0
+    member this.HasProcess () =
+        this.Process.Count > 0 || this.DeltaProcess.Count > 0
     
-    member this.HasPhysicsProcess () =
-        this.PhysicsDeltaDict.Count > 0 || this.PhysicsDict.Count > 0
-
-    member private this.DoProcessWith (delta : Lazy<float>) p dp =
-        p |> Seq.iter (fun f -> f ())
+    member this.DoProcess (node: Node) =
+        this.Process.Values |> Seq.iter (fun f -> f ())
         
-        if dp |> Seq.isEmpty |> not then
-            let delta = delta.Value
-            dp |> Seq.iter (fun f -> f delta)
+        if this.DeltaProcess.Values |> Seq.isEmpty |> not then
+            let delta = if this.Physics then node.GetPhysicsProcessDeltaTime () else node.GetProcessDeltaTime ()
+            this.DeltaProcess.Values |> Seq.iter (fun f -> f delta)
     
-    member this.DoIdleProcess (node: Node) =
-        this.DoProcessWith (lazy node.GetProcessDeltaTime ()) this.IdleDict.Values this.IdleDeltaDict.Values
-    
-    member this.DoPhysicsProcess (node: Node) =
-        this.DoProcessWith (lazy node.GetPhysicsProcessDeltaTime ()) this.PhysicsDict.Values this.PhysicsDeltaDict.Values
-    
-type private ProcessResource() =
+// godot needs a parameterless constructor for duplication
+// so we need to separate them
+
+type private ProcessIdleResource() =
     inherit Resource ()
-    member val Data = ProcessData.New () with get
-
-let private processInitMeta = "_fs_node_process_init"
-let private processDataMeta = "_fs_node_process_data"
-
-let private getProcessData (node: Node) =
-    if node |> GodotObject.hasMeta processInitMeta |> not then
-        node |> GodotObject.setMeta processInitMeta true
-        node.add_TreeExited (fun () ->
-            node |> GodotObject.removeMeta processDataMeta |> ignore
-        )
+    member val Data = ProcessData.New false with get
     
-    let res = node |> GodotObject.getMetaWithDefault processDataMeta (lazy new ProcessResource())
-    res.Data
-    
-let private hasIdleProcess (node: Node) =
-    (node |> getProcessData).HasIdleProcess ()
-    
-let private hasPhysicsProcess (node: Node) =
-    (node |> getProcessData).HasPhysicsProcess ()
-
-let private updateNewlyWith (updater : unit -> unit) (node : Node) =
-    if node.IsInsideTree () then
-        updater ()
-    else
-        node.Connect (
-            Node.SignalName.TreeEntered,
-            Callable.From updater,
-            GodotObject.ConnectFlags.OneShot |> uint32
-        ) |> ignore
+type private ProcessPhysicsResource() =
+    inherit Resource ()
+    member val Data = ProcessData.New true with get
 
 let mutable private cachedIdleUpdate = false
 let mutable private cachedPhysicsUpdate = false
 
-let private updateNewly (physics : bool) (node: Node) =
+let private notifyCache physics =
     if physics then
-        if node |> hasPhysicsProcess |> not then
-            node |> updateNewlyWith (fun () -> cachedPhysicsUpdate <- true)
+        cachedPhysicsUpdate <- true
     else
-        if node |> hasIdleProcess |> not then
-            node |> updateNewlyWith (fun () -> cachedIdleUpdate <- true)
+        cachedIdleUpdate <- true
+
+let private getProcessDataMeta physics =
+    if physics then
+        "_fs_node_process_data_physics"
+    else
+        "_fs_node_process_data_idle"
+
+let private getProcessData physics (node: Node) =
+    let meta = getProcessDataMeta physics
+    if node |> hasMeta meta then
+        if physics then
+            (node |> getMeta<ProcessPhysicsResource> meta).Data
+        else
+            (node |> getMeta<ProcessIdleResource> meta).Data
+    else
+        node.add_TreeEntered (fun () -> notifyCache physics)
+        node.add_TreeExited (fun () -> notifyCache physics)
+        
+        let res, data =
+            if physics then
+                let p = new ProcessPhysicsResource()
+                p :> Resource, p.Data
+            else
+                let p = new ProcessIdleResource()
+                p :> Resource, p.Data
+        
+        node |> setMeta meta res
+        data
+    
+let hasProcess physics (node: Node) =
+    let meta = getProcessDataMeta physics
+    if node |> hasMeta meta |> not then
+        false
+    else
+        let data = node |> getProcessData physics
+        data.HasProcess ()
+
+let hasIdleProcess (node: Node) =
+    node |> hasProcess false
+    
+let hasPhysicsProcess (node: Node) =
+    node |> hasProcess true
 
 let addProcess (f : unit -> unit) (physics : bool) (node: Node) =
-    node |> updateNewly physics
-    let data = node |> getProcessData
-    let dict = if physics then data.PhysicsDict else data.IdleDict
+    let data = node |> getProcessData physics
+    if node.IsInsideTree () && data.HasProcess () |> not then
+        notifyCache physics
+    let dict = data.Process
     let id = Guid.NewGuid ()
     dict.Add (id, f)
     id
     
 let addDeltaProcess (f : float -> unit) (physics : bool) (node: Node) =
-    node |> updateNewly physics
-    let data = node |> getProcessData
-    let dict = if physics then data.PhysicsDeltaDict else data.IdleDeltaDict
+    let data = node |> getProcessData physics
+    if node.IsInsideTree () && data.HasProcess () |> not then
+        notifyCache physics
+    let dict = data.DeltaProcess
     let id = Guid.NewGuid ()
     dict.Add (id, f)
     id
@@ -121,11 +131,22 @@ let addIdleDelta32Process (f : float32 -> unit) (node: Node) =
 let addPhysicsDelta32Process (f : float32 -> unit) (node: Node) =
     node |> addDelta32Process f true
 
-let removeProcess (id: Guid) (node: Node) =
-    let data = node |> getProcessData
-    data.IdleDict.Remove id || data.IdleDeltaDict.Remove id ||
-    data.PhysicsDict.Remove id || data.PhysicsDeltaDict.Remove id
+let private removeProcessWith physics (id: Guid) (node: Node) =
+    if node |> hasProcess physics |> not then
+        false
+    else
+        let data = node |> getProcessData physics
+        data.Process.Remove id || data.DeltaProcess.Remove id
+
+let removeIdleProcess (id: Guid) (node: Node) =
+    node |> removeProcessWith false id
     
+let removePhysicsProcess (id: Guid) (node: Node) =
+    node |> removeProcessWith true id
+
+let removeProcess (id: Guid) (node: Node) =
+    node |> removeIdleProcess id || node |> removePhysicsProcess id
+
 // node process logic
 
 let mutable private cachedProcessNodes : Node list = []
@@ -143,13 +164,9 @@ let private updatePhysicsProcessCache (tree: SceneTree) =
     cachedPhysicsProcessNodes <-
         root |> getChildrenAndSelfRecWith (fun n -> n.CanProcess () && n |> hasPhysicsProcess)
         
-let private doIdleProcess (node: Node) =
-    let data = node |> getProcessData
-    data.DoIdleProcess node
-
-let private doPhysicsProcess (node: Node) =
-    let data = node |> getProcessData
-    data.DoPhysicsProcess node
+let private doProcess physics (node: Node) =
+    let data = node |> getProcessData physics
+    data.DoProcess node
     
 // entry point
 
@@ -162,14 +179,14 @@ let private tree =
                 cachedIdleUpdate <- false
                 updateIdleProcessCache t
             
-            cachedProcessNodes |> List.iter (fun n -> n |> doIdleProcess)
+            cachedProcessNodes |> List.iter (fun n -> n |> doProcess false)
         )
         t.add_PhysicsFrame (fun () ->
             if cachedPhysicsUpdate then
                 cachedPhysicsUpdate <- false
                 updatePhysicsProcessCache t
             
-            cachedPhysicsProcessNodes |> List.iter (fun n -> n |> doPhysicsProcess)
+            cachedPhysicsProcessNodes |> List.iter (fun n -> n |> doProcess true)
         )
         
         t

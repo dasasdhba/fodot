@@ -24,12 +24,10 @@ type TestScript(node : Node2D) =
     let testGetAfterReady=
         node.add_Ready (fun () -> testGetData ())
     
-    let testProcess =
-        node.add_Ready (fun () ->
-            node |> Engine.addPhysicsDelta32Process (fun delta ->
-                node.Position <- node.Position + 100f * delta * Vector2.Right
-            ) |> ignore
-        )
+    do
+        node |> Engine.addPhysicsDelta32Process (fun delta ->
+            node.Position <- node.Position + 100f * delta * Vector2.Right
+        ) |> ignore
     
     member val TestData = "哇哈哈"
     member this.TestName
