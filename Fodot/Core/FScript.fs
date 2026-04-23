@@ -50,6 +50,12 @@ module FScript =
 
     let private getConstructors (t: Type) =
         paramCache.GetOrAdd(t, fun _ -> t.GetConstructors())
+        
+    let buildCache () =
+        for k in typeMap.Value.Keys do
+            let ts = typeMap.Value[k]
+            cache[k] <- Ok ts
+            ts |> List.iter (fun t -> getConstructors t |> ignore)
 
     let private create (name: string) (args: obj array) = monad {
         let! typs = 
@@ -68,15 +74,17 @@ module FScript =
 
             let! matchedConstructor =
                 constructors
+                |> Array.tryHead
 
-                |> Array.tryFind (fun ctor ->
-                    let parameters = ctor.GetParameters()
+                // we don't really need multiple constructors
+                //|> Array.tryFind (fun ctor ->
+                //    let parameters = ctor.GetParameters()
 
-                    parameters.Length = args.Length &&
-                    Array.forall2 (fun (param: ParameterInfo) arg ->
-                        param.ParameterType.IsAssignableFrom(arg.GetType())
-                    ) parameters args
-                )
+                //    parameters.Length = args.Length &&
+                //    Array.forall2 (fun (param: ParameterInfo) arg ->
+                //        param.ParameterType.IsAssignableFrom(arg.GetType())
+                //    ) parameters args
+                //)
 
             matchedConstructor.Invoke(args)
         })
@@ -84,8 +92,8 @@ module FScript =
 
     type private FScriptData() =
         inherit Resource()
-        member val Keys = ResizeArray<string>() with get, set
-        member val Scripts = ResizeArray<Object>() with get, set
+        member val Keys = ResizeArray<string>() with get
+        member val Scripts = ResizeArray<Object>() with get
 
     let private fScriptMeta = "_fs_script_data"
 

@@ -9,12 +9,10 @@ open Godot
 
 type private ProcessData =
     {
-        Physics : bool
         Process : Dictionary<Guid, unit -> unit>
         DeltaProcess : Dictionary<Guid, float -> unit>
     }
-    static member New physics = {
-        Physics = physics
+    static member New () = {
         Process = Dictionary<Guid, unit -> unit>()
         DeltaProcess = Dictionary<Guid, float -> unit>()
     }
@@ -22,23 +20,13 @@ type private ProcessData =
     member this.HasProcess () =
         this.Process.Count > 0 || this.DeltaProcess.Count > 0
     
-    member this.DoProcess (node: Node) =
+    member this.DoProcess delta =
         this.Process.Values |> Seq.iter (fun f -> f ())
-        
-        if this.DeltaProcess.Values |> Seq.isEmpty |> not then
-            let delta = if this.Physics then node.GetPhysicsProcessDeltaTime () else node.GetProcessDeltaTime ()
-            this.DeltaProcess.Values |> Seq.iter (fun f -> f delta)
-    
-// godot needs a parameterless constructor for duplication
-// so we need to separate them
+        this.DeltaProcess.Values |> Seq.iter (fun f -> f delta)
 
-type private ProcessIdleResource() =
+type private ProcessResource() =
     inherit Resource ()
-    member val Data = ProcessData.New false with get
-    
-type private ProcessPhysicsResource() =
-    inherit Resource ()
-    member val Data = ProcessData.New true with get
+    member val Data = ProcessData.New () with get
 
 let private cachedIdleUpdate = ResizeArray<Node>()
 let private cachedPhysicsUpdate = ResizeArray<Node>()
@@ -66,21 +54,14 @@ let private getProcessDataMeta physics =
 let private getProcessData physics (node: Node) =
     let meta = getProcessDataMeta physics
     if node |> hasMeta meta then
-        if physics then
-            (node |> getMeta<ProcessPhysicsResource> meta).Data
-        else
-            (node |> getMeta<ProcessIdleResource> meta).Data
+        (node |> getMeta<ProcessResource> meta).Data
     else
         node.add_TreeEntered (fun () -> node |> updateProcessCache physics)
         node.add_TreeExited (fun () -> node |> updateRemoveCache physics)
         
         let res, data =
-            if physics then
-                let p = new ProcessPhysicsResource()
-                p :> Resource, p.Data
-            else
-                let p = new ProcessIdleResource()
-                p :> Resource, p.Data
+            let p = new ProcessResource()
+            p :> Resource, p.Data
         
         node |> setMeta meta res
         data
@@ -211,31 +192,36 @@ let private treeUpdateRemoveCache physics =
         cache.Remove n |> ignore
         data.Remove n |> ignore
     remove.Clear ()
-    
+
+let private treeDoProcess physics (tree : SceneTree) =
+    treeUpdateRemoveCache physics
+    treeUpdateProcessCache physics
+    let nodes, data, delta =
+        if physics then
+            cachedPhysicsProcessNodes,
+            cachedPhysicsProcessData,
+            tree.GetCurrentScene().GetPhysicsProcessDeltaTime()
+        else
+            cachedProcessNodes,
+            cachedProcessData,
+            tree.GetCurrentScene().GetProcessDeltaTime()
+    nodes |> Seq.iter (fun n ->
+        if n.CanProcess () then
+            data[n].DoProcess delta
+    )
+
 // entry point
 
 let private tree =
     lazy (
+        // this is optional, it can increase runtime performance
+        // otherwise script cache will be built on their first call
+        FScript.buildCache ()
+        
         let t = Engine.GetMainLoop () :?> SceneTree
         t.add_NodeAdded (fun node -> node |> FScript.init)
-        t.add_ProcessFrame (fun () ->
-            treeUpdateRemoveCache false
-            treeUpdateProcessCache false
-            cachedProcessNodes |> Seq.iter (fun n ->
-                if n.CanProcess () then
-                    let data = cachedProcessData[n]
-                    data.DoProcess n
-            )
-        )
-        t.add_PhysicsFrame (fun () ->
-            treeUpdateRemoveCache true
-            treeUpdateProcessCache true
-            cachedPhysicsProcessNodes |> Seq.iter (fun n ->
-                if n.CanProcess () then
-                    let data = cachedPhysicsProcessData[n]
-                    data.DoProcess n
-            )
-        )
+        t.add_ProcessFrame (fun () -> t |> treeDoProcess false)
+        t.add_PhysicsFrame (fun () -> t |> treeDoProcess true)
         
         t
     )
