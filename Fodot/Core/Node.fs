@@ -84,14 +84,6 @@ let bindChild (child : Node) (node : Node) =
             child.QueueFree ()
     )
     node.add_TreeExited (fun _ -> child.QueueFree ())
-    
-// signal
-
-let toSignal (name : string) (node : Node) =
-    GodotTask.GDTask.FromSignal(node, name)
-
-let toSignalWith ct (name : string) (node : Node)=
-    GodotTask.GDTask.FromSignal(node, name, ct)
 
 // init
     

@@ -151,6 +151,7 @@ module FScript =
             |> List.map (fun s -> s[3..])
             |> List.append (obj |> getCallbackFScripts)
             |> List.filter (fun s -> obj |> containsKey s |> not)
+            |> List.distinct
         
         for m in arr do
             try

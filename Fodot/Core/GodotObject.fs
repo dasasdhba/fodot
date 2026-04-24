@@ -2,6 +2,7 @@ module Fodot.Core.GodotObject
 
 open System
 open Godot
+open Microsoft.FSharp.Reflection
 
 // metadata
 
@@ -156,3 +157,34 @@ let callSome<'a> (method : string) (args : Variant[]) (obj : GodotObject) =
         None
     else
         obj.Call (new StringName(method), args) |> Variant.toSome<'a>
+        
+// signal
+
+let toSignal (name : string) (obj : GodotObject) =
+    GodotTask.GDTask.FromSignal(obj, name)
+
+let toSignalWith ct (name : string) (obj : GodotObject) =
+    GodotTask.GDTask.FromSignal(obj, name, ct)
+
+// record
+
+/// convert godot obj's property to readonly record.
+/// cannot handle typed Godot Array or Dictionary, using variant one in record instead.
+let deserialize<'T when 'T : not struct> (obj: GodotObject) : 'T =
+    let recordType = typeof<'T>
+    
+    if not (FSharpType.IsRecord recordType) then
+        failwith $"{recordType.Name} is not a valid F# Record."
+    
+    let fields = FSharpType.GetRecordFields recordType
+    
+    let fieldValues =
+        fields
+        
+        |> Array.map (fun prop ->
+            let fieldName = prop.Name
+            let variant = obj.Get(fieldName)
+            variant.Obj |> box
+        )
+    
+    FSharpValue.MakeRecord(recordType, fieldValues) :?> 'T

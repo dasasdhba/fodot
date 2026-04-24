@@ -1,5 +1,6 @@
 namespace Fodot.Core
 
+open System
 open Godot
 open Godot.Collections
 
@@ -116,7 +117,48 @@ type GDMetaDictionary<'a, 'b> =
             PropName = prop
             Default = def
         }
+
+type GDSignal =
+    {
+        Object : GodotObject
+        SignalName : string
+    }
+    member private this.signalName = new StringName(this.SignalName)
+    
+    static member From (signal : string) (obj : GodotObject) =
+        {
+            Object = obj
+            SignalName = signal
+        }
+    
+    member this.AddWith (flags : GodotObject.ConnectFlags) (call : Callable) =
+        this.Object.Connect(
+            this.signalName,
+            call,
+            uint32 flags
+        )
         
+    member this.Add (call : Callable) =
+        this.Object.Connect(
+            this.signalName,
+            call
+        )
+        
+    member this.Remove (call : Callable) =
+        this.Object.Disconnect(
+            this.signalName,
+            call
+        )
+        
+    member this.Emit ([<ParamArray>] args : Variant array) =
+        this.Object.EmitSignal(this.signalName, args)
+        
+    member this.AsTask () =
+        this.Object |> GodotObject.toSignal this.SignalName
+        
+    member this.AsTaskWith ct =
+        this.Object |> GodotObject.toSignalWith ct this.SignalName
+
 module GD =
     
     let private loadLock = obj()

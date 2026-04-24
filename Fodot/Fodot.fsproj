@@ -13,6 +13,7 @@
         <Compile Include="Core\FScript.fs" />
         <Compile Include="Core\Node.fs" />
         <Compile Include="Core\Engine.fs" />
+        <Compile Include="Core\GDTask.fs" />
         <Compile Include="Core\Async.fs" />
         <Compile Include="Core\PackedScene.fs" />
         <Compile Include="System\Singleton.fs" />

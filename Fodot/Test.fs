@@ -6,6 +6,13 @@ open Godot
 open Fodot.Core
 open Fodot.Core.GodotObject
 
+type MyResource =
+    {
+        my_int : int64
+        my_str : string
+        my_array : Collections.Array
+    }
+
 [<FScript("test_script")>]
 type TestScript(node : Node2D) =    
     do
@@ -23,6 +30,9 @@ type TestScript(node : Node2D) =
     do
         node.add_Ready (fun () ->
             task () |> ignore
+            let res = node |> get<Resource> "res"
+            let record = res |> deserialize<MyResource>
+            GD.Print record.my_str
         )
     
     member val TestData = "哇哈哈"

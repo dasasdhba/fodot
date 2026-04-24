@@ -1,9 +1,13 @@
 [gd_scene format=3 uid="uid://daa8j8uxlij7k"]
 
 [ext_resource type="Texture2D" uid="uid://corswjt8xmnko" path="res://icon.svg" id="1_ri0sw"]
+[ext_resource type="Script" uid="uid://d4anhtr8su4bn" path="res://test/test_script.gd" id="2_lmdpm"]
+[ext_resource type="Resource" uid="uid://c38nb53weutc1" path="res://test/new_resource.tres" id="3_mafe7"]
 
 [node name="SingleTest" type="Node2D" unique_id=1370197312]
 
-[node name="Icon" type="Sprite2D" parent="." unique_id=560232545 groups=["fs_test_script"]]
+[node name="Icon" type="Sprite2D" parent="." unique_id=560232545]
 position = Vector2(64, 64)
 texture = ExtResource("1_ri0sw")
+script = ExtResource("2_lmdpm")
+res = ExtResource("3_mafe7")
