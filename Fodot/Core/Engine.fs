@@ -7,26 +7,26 @@ open Godot
 
 // node process data
 
-type private ProcessData =
-    {
-        Process : Dictionary<Guid, unit -> unit>
-        DeltaProcess : Dictionary<Guid, float -> unit>
-    }
-    static member New () = {
-        Process = Dictionary<Guid, unit -> unit>()
-        DeltaProcess = Dictionary<Guid, float -> unit>()
-    }
+type ProcessFunc<'a> =
+    | Unit of (unit -> 'a)
+    | Delta of (float -> 'a)
+    | Delta32 of (float32 -> 'a)
     
-    member this.HasProcess () =
-        this.Process.Count > 0 || this.DeltaProcess.Count > 0
-    
-    member this.DoProcess delta =
-        this.Process.Values |> Seq.iter (fun f -> f ())
-        this.DeltaProcess.Values |> Seq.iter (fun f -> f delta)
+    member this.Invoke (delta : float) =
+        match this with
+        | Unit f -> f ()
+        | Delta f -> f delta
+        | Delta32 f -> f (float32 delta)
 
-type private ProcessResource() =
+type ProcessUnit = ProcessFunc<unit>
+    
+type private ProcessData() =
     inherit Resource ()
-    member val Data = ProcessData.New () with get
+    member val Process = Dictionary<Guid, ProcessUnit>() with get
+    member this.HasProcess () =
+        this.Process.Count > 0
+    member this.DoProcess delta =
+        this.Process.Values |> Seq.iter (fun f -> f.Invoke delta)
 
 let private cachedIdleUpdate = ResizeArray<Node>()
 let private cachedPhysicsUpdate = ResizeArray<Node>()
@@ -54,17 +54,14 @@ let private getProcessDataMeta physics =
 let private getProcessData physics (node: Node) =
     let meta = getProcessDataMeta physics
     if node |> hasMeta meta then
-        (node |> getMeta<ProcessResource> meta).Data
+        node |> getMeta<ProcessData> meta
     else
         node.add_TreeEntered (fun () -> node |> updateProcessCache physics)
         node.add_TreeExited (fun () -> node |> updateRemoveCache physics)
         
-        let res, data =
-            let p = new ProcessResource()
-            p :> Resource, p.Data
-        
+        let res = new ProcessData()
         node |> setMeta meta res
-        data
+        res
     
 let hasProcess physics (node: Node) =
     let meta = getProcessDataMeta physics
@@ -76,7 +73,7 @@ let hasIdleProcess (node: Node) =
 let hasPhysicsProcess (node: Node) =
     node |> hasProcess true
 
-let addProcess (f : unit -> unit) (physics : bool) (node: Node) =
+let addProcessType (f : ProcessUnit) (physics : bool) (node: Node) =
     let data = node |> getProcessData physics
     if node.IsInsideTree () && data.HasProcess () |> not then
         node |> updateProcessCache physics
@@ -84,16 +81,16 @@ let addProcess (f : unit -> unit) (physics : bool) (node: Node) =
     let id = Guid.NewGuid ()
     dict.Add (id, f)
     id
+
+let addProcess (f : unit -> unit) (physics : bool) (node: Node) =
+    node |> addProcessType (Unit f) physics
     
 let addDeltaProcess (f : float -> unit) (physics : bool) (node: Node) =
-    let data = node |> getProcessData physics
-    if node.IsInsideTree () && data.HasProcess () |> not then
-        node |> updateProcessCache physics
-    let dict = data.DeltaProcess
-    let id = Guid.NewGuid ()
-    dict.Add (id, f)
-    id
-    
+    node |> addProcessType (Delta f) physics
+
+let addDelta32Process (f : float32 -> unit) (physics : bool) (node: Node) =
+    node |> addProcessType (Delta32 f) physics
+
 let addIdleProcess (f : unit -> unit) (node: Node) =
     node |> addProcess f false
     
@@ -106,9 +103,6 @@ let addIdleDeltaProcess (f : float -> unit) (node: Node) =
 let addPhysicsDeltaProcess (f : float -> unit) (node: Node) =
     node |> addDeltaProcess f true
     
-let addDelta32Process (f : float32 -> unit) (physics : bool) (node: Node) =
-    node |> addDeltaProcess (fun delta -> f (float32 delta)) physics
-    
 let addIdleDelta32Process (f : float32 -> unit) (node: Node) =
     node |> addDelta32Process f false
     
@@ -120,7 +114,7 @@ let private removeProcessWith physics (id: Guid) (node: Node) =
         false
     else
         let data = node |> getProcessData physics
-        data.Process.Remove id || data.DeltaProcess.Remove id
+        data.Process.Remove id
 
 let removeIdleProcess (id: Guid) (node: Node) =
     node |> removeProcessWith false id
@@ -130,6 +124,38 @@ let removePhysicsProcess (id: Guid) (node: Node) =
 
 let removeProcess (id: Guid) (node: Node) =
     node |> removeIdleProcess id || node |> removePhysicsProcess id
+
+type ProcessConfig =
+    {
+        Process : ProcessUnit
+        Physics : bool
+    }
+    member this.AddWith (node : Node) =
+        node |> addProcessType this.Process this.Physics
+    static member New physics proc=
+        {
+            Process = proc
+            Physics = physics
+        }
+    static member NewIdle (proc : ProcessUnit) =
+        ProcessConfig.New false proc
+    static member NewIdle (f : unit -> unit) =
+        ProcessConfig.New false (Unit f)
+    static member NewIdle (f : float -> unit) =
+        ProcessConfig.New false (Delta f)
+    static member NewIdle (f : float32 -> unit) =
+        ProcessConfig.New false (Delta32 f)
+    static member NewPhysics (proc : ProcessUnit) =
+        ProcessConfig.New true proc
+    static member NewPhysics (f : unit -> unit) =
+        ProcessConfig.New true (Unit f)
+    static member NewPhysics (f : float -> unit) =
+        ProcessConfig.New true (Delta f)
+    static member NewPhysics (f : float32 -> unit) =
+        ProcessConfig.New true (Delta32 f)
+
+let addProcessBy (config : ProcessConfig) (node: Node) =
+    config.AddWith node
 
 // node process logic
 

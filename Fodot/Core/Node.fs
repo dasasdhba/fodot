@@ -17,6 +17,12 @@ let addChildInternal (child : Node) inter (node : Node) =
 let addChild (child : Node) (node : Node) =
     node |> addChildInternal child Node.InternalMode.Disabled
     
+let addChildInternalFront (child : Node) (node : Node) =
+    node |> addChildInternal child Node.InternalMode.Front
+
+let addChildInternalBack (child : Node) (node : Node) =
+    node |> addChildInternal child Node.InternalMode.Back
+
 let addSibling (sibling : Node) (node : Node) =
     if node |> isAccessSafe then
         node.AddSibling(sibling)
@@ -24,6 +30,31 @@ let addSibling (sibling : Node) (node : Node) =
         node |> callDeferred "add_sibling" [| sibling |> Variant.from |]
 
 // node get
+
+let getNode<'a when 'a: not struct and 'a :> Node> (name : string) (node : Node) =
+    node.GetNode<'a>(name)
+
+let getSomeNode<'a when 'a: not struct and 'a :> Node> (name : string) (node : Node) =
+    match node.GetNodeOrNull<'a> name with
+    | null -> None
+    | node -> Some node
+    
+let getChildInternal<'a when 'a: not struct and 'a :> Node> (idx : int) (node : Node) =
+    node.GetChild<'a>(idx, true)
+    
+let getChild<'a when 'a: not struct and 'a :> Node> (idx : int) (node : Node) =
+    node.GetChild<'a>(idx)
+
+let private getSomeChildWith<'a when 'a: not struct and 'a :> Node> (idx: int) inter (node : Node) =
+    match node.GetChild<'a>(idx, inter) with
+    | null -> None
+    | node -> Some node
+
+let getSomeChild<'a when 'a: not struct and 'a :> Node> (idx : int) (node : Node) =
+    node |> getSomeChildWith<'a> idx false
+
+let getSomeChildInternal<'a when 'a: not struct and 'a :> Node> (idx : int) (node : Node) =
+    node |> getSomeChildWith<'a> idx true
 
 let rec getChildrenRecWith filter (node: Node) =
     node.GetChildren ()
@@ -48,11 +79,19 @@ let getChildrenAndSelfRec (node: Node) =
     node |> getChildrenAndSelfRecWith (fun _ -> true)
 
 let bindChild (child : Node) (node : Node) =
-    node.add_TreeEntered (fun _ ->
+    child.add_TreeEntered (fun _ ->
         if child.GetParent () <> node then
             child.QueueFree ()
     )
     node.add_TreeExited (fun _ -> child.QueueFree ())
+    
+// signal
+
+let toSignal (name : string) (node : Node) =
+    GodotTask.GDTask.FromSignal(node, name)
+
+let toSignalWith ct (name : string) (node : Node)=
+    GodotTask.GDTask.FromSignal(node, name, ct)
 
 // init
     
