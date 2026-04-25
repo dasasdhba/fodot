@@ -5,32 +5,16 @@ open System.Collections.Concurrent
 open System.Threading.Tasks
 open Godot
 open GodotTask
-
-type SceneOrPath =
-    | Scene of PackedScene
-    | Path of string
-    
-    member this.Packed = lazy (
-        match this with
-        | Scene scene -> scene
-        | Path path -> GD.loadAs<PackedScene> path
-    )
-    
-    member this.ResourcePath =
-        match this with
-        | Scene scene -> scene.ResourcePath
-        | Path path -> path
         
 type AsyncScenePool() =
     let queueLock = obj()
-    let mutable queuedAdd : SceneOrPath list = []
-    let mutable queuedRemove : SceneOrPath list = []
+    let mutable queuedAdd : PackedScene list = []
+    let mutable queuedRemove : PackedScene list = []
     let pool =
         ConcurrentDictionary<PackedScene, ConcurrentQueue<Node>> ()
     let mutable addTask : Task<unit> option = None
     
-    member this.Update (scene : SceneOrPath) =
-        let scene = scene.Packed.Value
+    member this.Update (scene : PackedScene) =
         let node = PackedScene.instantiate scene
         
         pool.AddOrUpdate(
@@ -44,12 +28,11 @@ type AsyncScenePool() =
             )
         ) |> ignore
     
-    member this.UpdateMultiple (count : int) (scene : SceneOrPath) =
+    member this.UpdateMultiple (count : int) (scene : PackedScene) =
         for _ in 1..count do
             this.Update scene
     
-    member this.Get (scene : SceneOrPath) =
-        let scene = scene.Packed.Value
+    member this.Get (scene : PackedScene) =
         let queue = pool.GetOrAdd(scene, fun s ->
             ConcurrentQueue<Node>()
         )
@@ -61,7 +44,7 @@ type AsyncScenePool() =
             Logger.pushWarn $"{scene} at {scene.ResourcePath} has not been cached yet, try to increase initial count, or use pooling instead."
             PackedScene.instantiate scene |> Result.Error
     
-    member private this.RemoveWith count (scene : SceneOrPath) =
+    member private this.RemoveWith count (scene : PackedScene) =
         let matching, remain =
             queuedAdd |> List.filter (fun s -> s = scene),
             queuedAdd |> List.filter (fun s -> s <> scene)
@@ -72,7 +55,6 @@ type AsyncScenePool() =
             queuedAdd <- remain
             
             let mutable remain = count - matching.Length
-            let scene = scene.Packed.Value
             let queue = pool.GetOrAdd(scene, fun s ->
                 ConcurrentQueue<Node>()
             )
@@ -108,7 +90,7 @@ type AsyncScenePool() =
         )
     }
     
-    member this.AddList (scene : SceneOrPath list) =
+    member this.AddList (scene : PackedScene list) =
         lock queueLock (fun () ->
             queuedAdd <- queuedAdd @ scene
         )
@@ -116,29 +98,29 @@ type AsyncScenePool() =
         if addTask.IsNone || addTask.Value.IsCompleted then
             addTask <- Some (this.CreateAddTask ())
     
-    member this.AddMultiple (count : int) (scene : SceneOrPath) =
+    member this.AddMultiple (count : int) (scene : PackedScene) =
         this.AddList [for _ in 1..count -> scene]
     
-    member this.Add (scene : SceneOrPath) =
+    member this.Add (scene : PackedScene) =
         this.AddMultiple 1 scene
     
-    member this.RemoveList (scene : SceneOrPath list) =
+    member this.RemoveList (scene : PackedScene list) =
         lock queueLock (fun () ->
             queuedRemove <- queuedRemove @ scene
         )
         
         this.CreateRemoveTask () |> ignore
         
-    member this.RemoveMultiple (count : int) (scene : SceneOrPath) =
+    member this.RemoveMultiple (count : int) (scene : PackedScene) =
         this.RemoveList [for _ in 1..count -> scene]
     
-    member this.Remove (scene : SceneOrPath) =
+    member this.Remove (scene : PackedScene) =
         this.RemoveMultiple 1 scene
     
 type AsyncSceneConfig =
     {
         Pool : AsyncScenePool
-        Scene : SceneOrPath
+        Scene : PackedScene
         MaxCount : int
         InitialCount : int
     }
@@ -177,7 +159,7 @@ module AsyncScene =
     
     let globalPool = AsyncScenePool ()
     
-    let createCfg (scene : SceneOrPath) (maxCount : int) (initialCount : int) =
+    let createCfg (scene : PackedScene) (maxCount : int) (initialCount : int) =
         {
             Pool = globalPool
             Scene = scene
@@ -200,9 +182,5 @@ module AsyncScene =
 type AsyncSceneConfig with
     member this.CreateWith<'a when 'a :> Node> node =
         AsyncScene.createWith<'a> node this
-    static member From (scene : SceneOrPath) (maxCount : int) (initialCount : int) =
+    static member New (scene : PackedScene) (maxCount : int) (initialCount : int) =
         AsyncScene.createCfg scene maxCount initialCount
-    static member FromScene (scene : PackedScene) (maxCount : int) (initialCount : int) =
-        AsyncScene.createCfg (Scene scene) maxCount initialCount
-    static member FromPath (path : string) (maxCount : int) (initialCount : int) =
-        AsyncScene.createCfg (Path path) maxCount initialCount

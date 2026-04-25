@@ -60,6 +60,22 @@ module AsyncNode =
     let delay (time : float) (anode : AsyncNode) =
         anode |> delayWithSome None time
     
+    let delayFrameWithSome (proc : ProcessUnit option) (frame : uint) (anode : AsyncNode) =
+        let predictor =
+            let mutable counter = 0u
+            Delta (fun delta ->
+                if proc.IsSome then proc.Value.Invoke delta
+                counter <- counter + 1u
+                counter >= frame
+            )
+        anode |> until predictor
+    
+    let delayFrameWith (proc : ProcessUnit) (frame : uint) (anode : AsyncNode) =
+        anode |> delayFrameWithSome (Some proc) frame
+    
+    let delayFrame (frame : uint) (anode : AsyncNode) =
+        anode |> delayFrameWithSome None frame
+    
 type AsyncNode with
     member this.Until (predict : ProcessFunc<bool>) =
         this |> AsyncNode.until predict
@@ -69,3 +85,7 @@ type AsyncNode with
         this |> AsyncNode.delay time
     member this.DelayWith (proc : ProcessUnit) (time : float) =
         this |> AsyncNode.delayWith proc time
+    member this.DelayFrame (frame : uint) =
+        this |> AsyncNode.delayFrame frame
+    member this.DelayFrameWith (proc : ProcessUnit) (frame : uint) =
+        this |> AsyncNode.delayFrameWith proc frame
