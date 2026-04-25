@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Logger.fs" />
+        <Compile Include="Core\Logger.fs" />
         <Compile Include="Core\Variant.fs" />
         <Compile Include="Core\GodotObject.fs" />
         <Compile Include="Core\GD.fs" />
@@ -14,8 +14,9 @@
         <Compile Include="Core\Node.fs" />
         <Compile Include="Core\Engine.fs" />
         <Compile Include="Core\GDTask.fs" />
-        <Compile Include="Core\Async.fs" />
+        <Compile Include="Core\AsyncNode.fs" />
         <Compile Include="Core\PackedScene.fs" />
+        <Compile Include="Core\AsyncScene.fs" />
         <Compile Include="System\Singleton.fs" />
         <Compile Include="System\SceneManager.fs" />
         <Compile Include="System\Scene.fs" />
@@ -25,6 +26,7 @@
     <ItemGroup>
       <PackageReference Include="FSharpPlus" Version="1.9.1" />
       <PackageReference Include="GDTask" Version="3.0.0" />
+      <ProjectReference Include="..\GodotBridge\GodotBridge.csproj" />
     </ItemGroup>
 
 </Project>

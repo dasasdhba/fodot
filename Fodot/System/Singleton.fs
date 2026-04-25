@@ -1,6 +1,6 @@
 module Fodot.System.Singleton
 
-open Fodot
+open Fodot.Core
 
 let attach (node : 'a) (instance : byref<'a>) =
     match instance with

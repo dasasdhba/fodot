@@ -2,6 +2,7 @@ module Fodot.Test
 
 open System.Threading
 open Fodot.Core.Engine
+open Fodot.Core.Node
 open Godot
 open Fodot.Core
 open Fodot.Core.GodotObject
@@ -21,10 +22,22 @@ type TestScript(node : Node2D) =
         )
         proc.AddWith node |> ignore
     
+    let scene = node |> get<PackedScene> "scene"
+    let cfg = AsyncSceneConfig.FromScene scene 5 0
+    let loader = cfg.CreateWith<Node2D> node
+    
     let task ()= task {
         let async = AsyncNode.NewPhysics node CancellationToken.None
-        do! 3.0 |> async.Delay
+        do! 1.0 |> async.Delay
         node.Position <- node.Position + 100f * Vector2.Down
+        
+        do! 1.0 |> async.Delay
+        let n2 = loader.Get()
+        n2.Position <- node.Position + 100f * Vector2.Up
+        node |> addSibling n2
+        
+        do! 1.0 |> async.Delay
+        node.QueueFree ()
     }
     
     do

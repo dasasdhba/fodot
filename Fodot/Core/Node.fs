@@ -78,12 +78,34 @@ let getChildrenAndSelfRecWith filter (node: Node) =
 let getChildrenAndSelfRec (node: Node) =
     node |> getChildrenAndSelfRecWith (fun _ -> true)
 
+// bridge event
+
 let bindChild (child : Node) (node : Node) =
     child.add_TreeEntered (fun _ ->
         if child.GetParent () <> node then
             child.QueueFree ()
     )
-    node.add_TreeExited (fun _ -> child.QueueFree ())
+
+let createEventBy<'n, 'a when 'n :> Node> (child : 'n) signal (node: Node) =
+    let event = Event<'a>()
+    signal event.Trigger
+    
+    node |> bindChild child
+    node |> addChildInternalFront child
+    
+    event.Publish
+
+let createDeleteEvent (node: Node) =
+    let child = new GodotBridge.PreDeleteBridge()
+    node |> createEventBy child child.add_SignalPreDeleted
+
+let createInputEvent (node: Node) =
+    let child = new GodotBridge.InputBridge()
+    node |> createEventBy child child.add_SignalInput
+
+let createUnhandledInputEvent (node: Node) =
+    let child = new GodotBridge.UnhandledInputBridge()
+    node |> createEventBy child child.add_SignalUnhandledInput
 
 // init
     

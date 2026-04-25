@@ -1,6 +1,5 @@
 module Fodot.System.Scene
 
-open Fodot
 open Fodot.Core
 open Godot
 

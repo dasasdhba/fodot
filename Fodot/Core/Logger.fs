@@ -1,4 +1,4 @@
-module Fodot.Logger
+module Fodot.Core.Logger
 
 open Godot
 

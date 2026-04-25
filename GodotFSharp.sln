@@ -1,8 +1,10 @@
 ﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Godot", "godot\Godot.csproj", "{21485A41-4861-4A58-A0B8-098AF96C01A0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Godot", "project\Godot.csproj", "{21485A41-4861-4A58-A0B8-098AF96C01A0}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fodot", "Fodot\Fodot.fsproj", "{F80DA405-AE12-4919-9C94-4DCEBD6773E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GodotBridge", "GodotBridge\GodotBridge.csproj", "{62437333-C264-4E53-B74B-779BD286ABF5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,5 +25,11 @@ Global
 		{F80DA405-AE12-4919-9C94-4DCEBD6773E8}.ExportDebug|Any CPU.Build.0 = Debug|Any CPU
 		{F80DA405-AE12-4919-9C94-4DCEBD6773E8}.ExportRelease|Any CPU.ActiveCfg = Debug|Any CPU
 		{F80DA405-AE12-4919-9C94-4DCEBD6773E8}.ExportRelease|Any CPU.Build.0 = Debug|Any CPU
+		{62437333-C264-4E53-B74B-779BD286ABF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62437333-C264-4E53-B74B-779BD286ABF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62437333-C264-4E53-B74B-779BD286ABF5}.ExportDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62437333-C264-4E53-B74B-779BD286ABF5}.ExportDebug|Any CPU.Build.0 = Debug|Any CPU
+		{62437333-C264-4E53-B74B-779BD286ABF5}.ExportRelease|Any CPU.ActiveCfg = Debug|Any CPU
+		{62437333-C264-4E53-B74B-779BD286ABF5}.ExportRelease|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 EndGlobal

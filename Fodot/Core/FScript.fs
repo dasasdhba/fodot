@@ -4,7 +4,6 @@ open System
 open System.Collections.Concurrent
 open System.Reflection
 open FSharpPlus
-open Fodot
 open Godot
 open Fodot.Core.GodotObject
 

@@ -1,6 +1,6 @@
 using Godot;
 
-namespace GodotFSharp;
+namespace GodotCSharp;
 
 public partial class Bridge : Node
 {

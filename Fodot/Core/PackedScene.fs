@@ -20,3 +20,11 @@ let instantiate (packedScene: PackedScene)  =
         )
     node |> initScripts
     node
+    
+let instantiateToWith<'a when 'a :> Node> gen (packedScene: PackedScene)=
+    let node = packedScene |> instantiateWith gen
+    node :?> 'a
+    
+let instantiateTo<'a when 'a :> Node> (packedScene: PackedScene) =
+    let node = packedScene |> instantiate
+    node :?> 'a
