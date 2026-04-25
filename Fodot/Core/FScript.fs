@@ -91,20 +91,20 @@ module FScript =
 
     type private FScriptData() =
         inherit Resource()
-        member val Keys = ResizeArray<string>() with get
-        member val Scripts = ResizeArray<Object>() with get
+        member val Keys = ConcurrentBag<string>() with get
+        member val Scripts = ConcurrentBag<Object>() with get
 
     let private fScriptMeta = "_fs_script_data"
 
     let private updateScriptData (name : string) (scripts : Object list) (obj : GodotObject) =
         let data = obj |> getMetaWithDefault fScriptMeta (lazy new FScriptData())
         data.Keys.Add name
-        data.Scripts.AddRange scripts
+        scripts |> List.iter (fun s -> data.Scripts.Add s)
         
     let private containsKey (name : string) (obj : GodotObject) =
         let result = monad {
             let! data = obj |> getSomeMeta<FScriptData> fScriptMeta
-            if data.Keys.Contains name then
+            if data.Keys |> Seq.contains name then
                 ()
             else
                 return! None
@@ -149,8 +149,8 @@ module FScript =
             |> getMetaAndGroupListWith (fun s -> s.StartsWith "fs_" && s.Length > 3)
             |> List.map (fun s -> s[3..])
             |> List.append (obj |> getCallbackFScripts)
-            |> List.filter (fun s -> obj |> containsKey s |> not)
             |> List.distinct
+            |> List.filter (fun s -> obj |> containsKey s |> not)
         
         for m in arr do
             try

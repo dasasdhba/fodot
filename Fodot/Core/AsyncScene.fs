@@ -167,20 +167,24 @@ module AsyncScene =
             InitialCount = initialCount
         }
     
-    let createBy<'a when 'a :> Node> (cfg : AsyncSceneConfig) =
+    let fromCfg<'a when 'a :> Node> (cfg : AsyncSceneConfig) =
         new AsyncScene<'a>(cfg)
         
     let bind (node : Node) (scene : AsyncScene<'a>) =
         let del = node |> Node.getDeleteEvent
         del.Add (fun () -> scene.Dispose ())
         
-    let createWith<'a when 'a :> Node> (node : Node) (cfg : AsyncSceneConfig) =
-        let scene = createBy<'a> cfg
+    let fromCfgWith<'a when 'a :> Node> (node : Node) (cfg : AsyncSceneConfig) =
+        let scene = fromCfg<'a> cfg
         scene |> bind node
         scene
         
+    let fromNode<'a when 'a :> Node> (scene : PackedScene) (maxCount : int) (initialCount : int) (node : Node)=
+        let cfg = createCfg scene maxCount initialCount
+        fromCfgWith<'a> node cfg
+        
 type AsyncSceneConfig with
     member this.CreateWith<'a when 'a :> Node> node =
-        AsyncScene.createWith<'a> node this
+        this |> AsyncScene.fromCfgWith<'a> node
     static member New (scene : PackedScene) (maxCount : int) (initialCount : int) =
         AsyncScene.createCfg scene maxCount initialCount

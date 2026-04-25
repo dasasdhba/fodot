@@ -23,8 +23,7 @@ type TestScript(node : Node2D) =
         proc.AddWith node |> ignore
     
     let scene = node |> get<PackedScene> "scene"
-    let cfg = AsyncSceneConfig.New scene 5 0
-    let loader = cfg.CreateWith<Node2D> node
+    let loader = node |> AsyncScene.fromNode<Node2D> scene 5 0
     
     let task ()= task {
         let async = AsyncNode.NewPhysics node CancellationToken.None

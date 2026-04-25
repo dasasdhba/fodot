@@ -59,8 +59,6 @@ let private getProcessData physics (node: Node) =
     else
         node.add_TreeEntered (fun () -> node |> updateProcessCache physics)
         node.add_TreeExited (fun () -> node |> updateRemoveCache physics)
-        let del = node |> Node.getDeleteEvent
-        del.Add (fun () -> node |> updateRemoveCache physics)
         
         let res = new ProcessData()
         node |> setMeta meta res
