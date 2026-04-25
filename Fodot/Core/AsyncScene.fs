@@ -167,7 +167,6 @@ type AsyncScene<'a when 'a :> Node> (cfg : AsyncSceneConfig) =
             node :?> 'a
             
     member this.Dispose () =
-        Logger.push "Async Scene Disposed."
         disposed <- true
         cfg.Pool.RemoveMultiple cfg.MaxCount cfg.Scene
         
@@ -190,7 +189,7 @@ module AsyncScene =
         new AsyncScene<'a>(cfg)
         
     let bind (node : Node) (scene : AsyncScene<'a>) =
-        let del = node |> Node.createDeleteEvent
+        let del = node |> Node.getDeleteEvent
         del.Add (fun () -> scene.Dispose ())
         
     let createWith<'a when 'a :> Node> (node : Node) (cfg : AsyncSceneConfig) =

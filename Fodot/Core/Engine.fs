@@ -1,6 +1,7 @@
 module Fodot.Core.Engine
 
 open System
+open System.Collections.Concurrent
 open System.Collections.Generic
 open Fodot.Core.GodotObject
 open Godot
@@ -22,16 +23,16 @@ type ProcessUnit = ProcessFunc<unit>
     
 type private ProcessData() =
     inherit Resource ()
-    member val Process = Dictionary<Guid, ProcessUnit>() with get
+    member val Process = ConcurrentDictionary<Guid, ProcessUnit>() with get
     member this.HasProcess () =
         this.Process.Count > 0
     member this.DoProcess delta =
         this.Process.Values |> Seq.iter (fun f -> f.Invoke delta)
 
-let private cachedIdleUpdate = ResizeArray<Node>()
-let private cachedPhysicsUpdate = ResizeArray<Node>()
-let private cachedIdleRemove = ResizeArray<Node>()
-let private cachedPhysicsRemove = ResizeArray<Node>()
+let private cachedIdleUpdate = ConcurrentBag<Node>()
+let private cachedPhysicsUpdate = ConcurrentBag<Node>()
+let private cachedIdleRemove = ConcurrentBag<Node>()
+let private cachedPhysicsRemove = ConcurrentBag<Node>()
 
 let private updateProcessCache physics node =
     if physics then
@@ -58,6 +59,8 @@ let private getProcessData physics (node: Node) =
     else
         node.add_TreeEntered (fun () -> node |> updateProcessCache physics)
         node.add_TreeExited (fun () -> node |> updateRemoveCache physics)
+        let del = node |> Node.getDeleteEvent
+        del.Add (fun () -> node |> updateRemoveCache physics)
         
         let res = new ProcessData()
         node |> setMeta meta res
@@ -79,7 +82,7 @@ let addProcessType (f : ProcessUnit) (physics : bool) (node: Node) =
         node |> updateProcessCache physics
     let dict = data.Process
     let id = Guid.NewGuid ()
-    dict.Add (id, f)
+    dict.AddOrUpdate(id, (fun _ -> f), (fun _ __ -> f)) |> ignore
     id
 
 let addProcess (f : unit -> unit) (physics : bool) (node: Node) =
@@ -114,7 +117,8 @@ let private removeProcessWith physics (id: Guid) (node: Node) =
         false
     else
         let data = node |> getProcessData physics
-        data.Process.Remove id
+        let success, _ = data.Process.Remove id
+        success
 
 let removeIdleProcess (id: Guid) (node: Node) =
     node |> removeProcessWith false id
@@ -232,7 +236,7 @@ let private treeDoProcess physics (tree : SceneTree) =
             cachedProcessData,
             tree.GetCurrentScene().GetProcessDeltaTime()
     nodes |> Seq.iter (fun n ->
-        if n.CanProcess () then
+        if GodotObject.IsInstanceValid n && n.CanProcess () then
             data[n].DoProcess delta
     )
 

@@ -2,10 +2,10 @@ using Godot;
 
 namespace GodotBridge;
 
-public partial class PreDeleteBridge : Node
+public partial class DeleteBridge : Node
 {
     [Signal]
-    public delegate void PreDeletedEventHandler();
+    public delegate void DeletedEventHandler();
 
     public override void _Notification(int what)
     {
@@ -13,7 +13,7 @@ public partial class PreDeleteBridge : Node
         
         if ((ulong)what == NotificationPredelete)
         {
-            EmitSignalPreDeleted();
+            EmitSignalDeleted();
         }
     }
 }

@@ -83,6 +83,7 @@ let getChildrenAndSelfRec (node: Node) =
 let bindChild (child : Node) (node : Node) =
     child.add_TreeEntered (fun _ ->
         if child.GetParent () <> node then
+            child.SetBlockSignals true
             child.QueueFree ()
     )
 
@@ -96,8 +97,8 @@ let createEventBy<'n, 'a when 'n :> Node> (child : 'n) signal (node: Node) =
     event.Publish
 
 let createDeleteEvent (node: Node) =
-    let child = new GodotBridge.PreDeleteBridge()
-    node |> createEventBy child child.add_SignalPreDeleted
+    let child = new GodotBridge.DeleteBridge()
+    node |> createEventBy child child.add_SignalDeleted
 
 let createInputEvent (node: Node) =
     let child = new GodotBridge.InputBridge()
@@ -106,6 +107,43 @@ let createInputEvent (node: Node) =
 let createUnhandledInputEvent (node: Node) =
     let child = new GodotBridge.UnhandledInputBridge()
     node |> createEventBy child child.add_SignalUnhandledInput
+
+type private CachedEvent () =
+    inherit Resource ()
+    
+    member val DeleteEvent : IEvent<unit> option = None with get, set
+    member val InputEvent : IEvent<InputEvent> option = None with get, set
+    member val UnhandledInputEvent : IEvent<InputEvent> option = None with get, set
+    
+let private getCachedEventWith getter setter creator node =
+    let cache = node |> getMetaWithDefault "_fs_node_cached_event" (lazy new CachedEvent())
+    match getter cache with
+    | Some event -> event
+    | None ->
+        let event = creator ()
+        setter cache event
+        event
+
+let getDeleteEvent (node: Node) =
+    node
+    |> getCachedEventWith
+        _.DeleteEvent
+        (fun cache event -> cache.DeleteEvent <- Some event)
+        (fun () -> node |> createDeleteEvent)
+
+let getInputEvent (node: Node) =
+    node
+    |> getCachedEventWith
+        _.InputEvent
+        (fun cache event -> cache.InputEvent <- Some event)
+        (fun () -> node |> createInputEvent)
+
+let getUnhandledInputEvent (node: Node) =
+    node
+    |> getCachedEventWith
+        _.UnhandledInputEvent
+        (fun cache event -> cache.UnhandledInputEvent <- Some event)
+        (fun () -> node |> createUnhandledInputEvent)
 
 // init
     
