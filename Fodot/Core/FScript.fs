@@ -103,7 +103,7 @@ module FScript =
         
     let private containsKey (name : string) (obj : GodotObject) =
         let result = monad {
-            let! data = obj |> getSomeMeta<FScriptData> fScriptMeta
+            let! data = obj |> tryGetMeta<FScriptData> fScriptMeta
             if data.Keys |> Seq.contains name then
                 ()
             else
@@ -133,7 +133,7 @@ module FScript =
         
     let private getCallbackFScripts (obj : GodotObject) =
         let getCallArrWith (name : string) =
-            match obj |> callSome<string[]> name [||] with
+            match obj |> tryCall<string[]> name [||] with
             
             | Some arr -> arr |> List.ofSeq
             | None -> []
@@ -170,23 +170,21 @@ module FScript =
         else
             obj |> update
             
-    let get<'a> (obj : GodotObject) = monad {
+    let tryGet<'a> (obj : GodotObject) = monad {
         let! data =
             obj
             
-            |> getSomeMeta<FScriptData> fScriptMeta
-            |> Option.toResultWith $"{obj}: the fsharp script has not been initialized yet"
+            |> tryGetMeta<FScriptData> fScriptMeta
         
         return!
             data.Scripts
         
             |> Seq.tryFind (fun s -> s :? 'a)
             |> Option.map (fun s -> s :?> 'a)
-            |> Option.toResultWith $"{obj}: the script {typeof<'a>} was not found"
     }
     
-    let getSome<'a> (obj: GodotObject) =
-        obj |> get<'a> |> Option.ofResult
+    let get<'a> (obj: GodotObject) =
+        (obj |> tryGet<'a>).Value
         
     let contains<'a> (obj: GodotObject) =
-        obj |> getSome<'a> |> Option.isSome
+        obj |> tryGet<'a> |> Option.isSome

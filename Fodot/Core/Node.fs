@@ -3,7 +3,7 @@ module Fodot.Core.Node
 open Fodot.Core.GodotObject
 open Godot
 
-// node add
+// node access
 
 let isAccessSafe (node : Node) =
     (node.IsInsideTree () |> not) || node.IsNodeReady ()
@@ -29,12 +29,18 @@ let addSibling (sibling : Node) (node : Node) =
     else
         node |> callDeferred "add_sibling" [| sibling |> Variant.from |]
 
+let moveChild (idx : int) (node : Node) =
+    if node |> isAccessSafe then
+        node.MoveChild(node, idx)
+    else
+        node |> callDeferred "move_child" [| node |> Variant.from; idx |> Variant.from |]
+
 // node get
 
 let getNode<'a when 'a: not struct and 'a :> Node> (name : string) (node : Node) =
     node.GetNode<'a>(name)
 
-let getSomeNode<'a when 'a: not struct and 'a :> Node> (name : string) (node : Node) =
+let tryGetNode<'a when 'a: not struct and 'a :> Node> (name : string) (node : Node) =
     match node.GetNodeOrNull<'a> name with
     | null -> None
     | node -> Some node
@@ -45,16 +51,16 @@ let getChildInternal<'a when 'a: not struct and 'a :> Node> (idx : int) (node : 
 let getChild<'a when 'a: not struct and 'a :> Node> (idx : int) (node : Node) =
     node.GetChild<'a>(idx)
 
-let private getSomeChildWith<'a when 'a: not struct and 'a :> Node> (idx: int) inter (node : Node) =
-    match node.GetChild<'a>(idx, inter) with
+let private tryGetChildWith<'a when 'a: not struct and 'a :> Node> (idx: int) inter (node : Node) =
+    match node.GetChildOrNull<'a>(idx, inter) with
     | null -> None
     | node -> Some node
 
-let getSomeChild<'a when 'a: not struct and 'a :> Node> (idx : int) (node : Node) =
-    node |> getSomeChildWith<'a> idx false
+let tryGetChild<'a when 'a: not struct and 'a :> Node> (idx : int) (node : Node) =
+    node |> tryGetChildWith<'a> idx false
 
-let getSomeChildInternal<'a when 'a: not struct and 'a :> Node> (idx : int) (node : Node) =
-    node |> getSomeChildWith<'a> idx true
+let tryGetChildInternal<'a when 'a: not struct and 'a :> Node> (idx : int) (node : Node) =
+    node |> tryGetChildWith<'a> idx true
 
 let rec getChildrenRecWith filter (node: Node) =
     node.GetChildren ()
