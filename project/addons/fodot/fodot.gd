@@ -3,12 +3,7 @@ extends EditorPlugin
 
 # project settings
 
-static func add_project_setting(key, default, type, hint, hint_str) :
-	if ProjectSettings.has_setting(key) :
-		return
-
-	ProjectSettings.set(key, default)
-
+static func add_project_setting_info (key, type, hint, hint_str) :
 	var info = {
 		"name" : key,
 		"type" : type,
@@ -18,13 +13,24 @@ static func add_project_setting(key, default, type, hint, hint_str) :
 
 	ProjectSettings.add_property_info(info)
 
+static func add_project_setting(key, default, type, hint, hint_str) :
+	if ProjectSettings.has_setting(key) :
+		return
+
+	ProjectSettings.set(key, default)
+	add_project_setting_info(key, type, hint, hint_str)
+
 const MAIN_SCENE_KEY = "fodot/general/main_scene"
 const ASSEMBLY_KEY = "fodot/general/assemblies"
 const BRIDGE_NAME = "Fodot"
 
+func _enter_tree() -> void:
+	add_project_setting_info(MAIN_SCENE_KEY, TYPE_STRING, PROPERTY_HINT_FILE, "*.tscn,*.scn,*.res")
+	add_project_setting_info(ASSEMBLY_KEY, TYPE_STRING, PROPERTY_HINT_MULTILINE_TEXT, "")
+
 func _enable_plugin() -> void:
 	add_project_setting(MAIN_SCENE_KEY, "", TYPE_STRING, PROPERTY_HINT_FILE, "*.tscn,*.scn,*.res")
-	add_project_setting(ASSEMBLY_KEY, "Fodot.Core", TYPE_STRING, PROPERTY_HINT_MULTILINE_TEXT, "")
+	add_project_setting(ASSEMBLY_KEY, "", TYPE_STRING, PROPERTY_HINT_MULTILINE_TEXT, "")
 	add_autoload_singleton(BRIDGE_NAME, "Bridge.cs")
 
 func _disable_plugin() -> void:

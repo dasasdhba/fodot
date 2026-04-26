@@ -17,7 +17,7 @@ public partial class Bridge : Node
                 .Split(["\n", "\r", "\r\n"], StringSplitOptions.RemoveEmptyEntries)
                 .ToHashSet();
         
-        asm.Add("Fodot.Core");
+        asm.Add("Fodot");
         var loaded = asm.Select(s => Assembly.Load(s.Trim())).ToArray();
         
         Fodot.Core.FScript.setAssemblies(loaded);

@@ -1,4 +1,4 @@
-﻿namespace Fodot.Async
+﻿namespace Fodot
 
 module Say =
     let hello name =

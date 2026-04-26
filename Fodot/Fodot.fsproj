@@ -1,0 +1,37 @@
+﻿<Project Sdk="Godot.NET.Sdk/4.6.1">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <RootNamespace>Fodot</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Common\Attribute.fs" />
+        <Compile Include="Common\Logger.fs" />
+        <Compile Include="Common\Singleton.fs" />
+        <Compile Include="Core\Variant.fs" />
+        <Compile Include="Core\GodotObject.fs" />
+        <Compile Include="Core\GD.fs" />
+        <Compile Include="Core\FScript.fs" />
+        <Compile Include="Core\Node.fs" />
+        <Compile Include="Core\PackedScene.fs" />
+        <Compile Include="Core\Engine.fs" />
+        <Compile Include="Async\GodotObject.fs" />
+        <Compile Include="Async\GD.fs" />
+        <Compile Include="Async\GDTask.fs" />
+        <Compile Include="Async\AsyncScene.fs" />
+        <Compile Include="Async\AsyncNode.fs" />
+        <Compile Include="System\Stage.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Godot.Bridge\Godot.Bridge.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="FSharpPlus" Version="1.9.1" />
+        <PackageReference Include="GDTask" Version="3.0.0" />
+    </ItemGroup>
+
+</Project>
