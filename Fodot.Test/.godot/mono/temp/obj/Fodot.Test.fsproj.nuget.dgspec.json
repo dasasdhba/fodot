@@ -1,0 +1,459 @@
+{
+  "format": 1,
+  "restore": {
+    "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Fodot.Test\\Fodot.Test.fsproj": {}
+  },
+  "projects": {
+    "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Fodot.Async\\Fodot.Async.fsproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Fodot.Async\\Fodot.Async.fsproj",
+        "projectName": "Fodot.Async",
+        "projectPath": "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Fodot.Async\\Fodot.Async.fsproj",
+        "packagesPath": "D:\\Windows\\Nuget",
+        "outputPath": "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Fodot.Async\\.godot\\mono\\temp\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\dasasdhba\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\sdk\\9.0.204\\FSharp\\library-packs": {},
+          "D:\\Windows\\LocalNuget": {},
+          "F:\\Windows\\Godot-Source\\nuget": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Fodot.Core\\Fodot.Core.fsproj": {
+                "projectPath": "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Fodot.Core\\Fodot.Core.fsproj"
+              }
+            }
+          }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "FSharp.Core": {
+              "include": "Runtime, Compile, Build, Native, Analyzers, BuildTransitive",
+              "target": "Package",
+              "version": "[9.0.202, )",
+              "generatePathProperty": true
+            },
+            "GDTask": {
+              "target": "Package",
+              "version": "[3.0.0, )",
+              "generatePathProperty": true
+            },
+            "Godot.SourceGenerators": {
+              "target": "Package",
+              "version": "[4.6.1, )",
+              "autoReferenced": true,
+              "generatePathProperty": true
+            },
+            "GodotSharp": {
+              "target": "Package",
+              "version": "[4.6.1, )",
+              "autoReferenced": true,
+              "generatePathProperty": true
+            },
+            "GodotSharpEditor": {
+              "target": "Package",
+              "version": "[4.6.1, )",
+              "autoReferenced": true,
+              "generatePathProperty": true
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.204/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Fodot.Common\\Fodot.Common.fsproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Fodot.Common\\Fodot.Common.fsproj",
+        "projectName": "Fodot.Common",
+        "projectPath": "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Fodot.Common\\Fodot.Common.fsproj",
+        "packagesPath": "D:\\Windows\\Nuget",
+        "outputPath": "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Fodot.Common\\.godot\\mono\\temp\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\dasasdhba\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\sdk\\9.0.204\\FSharp\\library-packs": {},
+          "D:\\Windows\\LocalNuget": {},
+          "F:\\Windows\\Godot-Source\\nuget": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "FSharp.Core": {
+              "include": "Runtime, Compile, Build, Native, Analyzers, BuildTransitive",
+              "target": "Package",
+              "version": "[9.0.202, )",
+              "generatePathProperty": true
+            },
+            "Godot.SourceGenerators": {
+              "target": "Package",
+              "version": "[4.6.1, )",
+              "autoReferenced": true,
+              "generatePathProperty": true
+            },
+            "GodotSharp": {
+              "target": "Package",
+              "version": "[4.6.1, )",
+              "autoReferenced": true,
+              "generatePathProperty": true
+            },
+            "GodotSharpEditor": {
+              "target": "Package",
+              "version": "[4.6.1, )",
+              "autoReferenced": true,
+              "generatePathProperty": true
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.204/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Fodot.Core\\Fodot.Core.fsproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Fodot.Core\\Fodot.Core.fsproj",
+        "projectName": "Fodot.Core",
+        "projectPath": "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Fodot.Core\\Fodot.Core.fsproj",
+        "packagesPath": "D:\\Windows\\Nuget",
+        "outputPath": "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Fodot.Core\\.godot\\mono\\temp\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\dasasdhba\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\sdk\\9.0.204\\FSharp\\library-packs": {},
+          "D:\\Windows\\LocalNuget": {},
+          "F:\\Windows\\Godot-Source\\nuget": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Fodot.Common\\Fodot.Common.fsproj": {
+                "projectPath": "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Fodot.Common\\Fodot.Common.fsproj"
+              },
+              "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Godot.Bridge\\Godot.Bridge.csproj": {
+                "projectPath": "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Godot.Bridge\\Godot.Bridge.csproj"
+              }
+            }
+          }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "FSharp.Core": {
+              "include": "Runtime, Compile, Build, Native, Analyzers, BuildTransitive",
+              "target": "Package",
+              "version": "[9.0.202, )",
+              "generatePathProperty": true
+            },
+            "FSharpPlus": {
+              "target": "Package",
+              "version": "[1.9.1, )",
+              "generatePathProperty": true
+            },
+            "Godot.SourceGenerators": {
+              "target": "Package",
+              "version": "[4.6.1, )",
+              "autoReferenced": true,
+              "generatePathProperty": true
+            },
+            "GodotSharp": {
+              "target": "Package",
+              "version": "[4.6.1, )",
+              "autoReferenced": true,
+              "generatePathProperty": true
+            },
+            "GodotSharpEditor": {
+              "target": "Package",
+              "version": "[4.6.1, )",
+              "autoReferenced": true,
+              "generatePathProperty": true
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.204/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Fodot.Test\\Fodot.Test.fsproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Fodot.Test\\Fodot.Test.fsproj",
+        "projectName": "Fodot.Test",
+        "projectPath": "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Fodot.Test\\Fodot.Test.fsproj",
+        "packagesPath": "D:\\Windows\\Nuget",
+        "outputPath": "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Fodot.Test\\.godot\\mono\\temp\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\dasasdhba\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\sdk\\9.0.204\\FSharp\\library-packs": {},
+          "D:\\Windows\\LocalNuget": {},
+          "F:\\Windows\\Godot-Source\\nuget": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Fodot.Async\\Fodot.Async.fsproj": {
+                "projectPath": "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Fodot.Async\\Fodot.Async.fsproj"
+              },
+              "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Fodot.Common\\Fodot.Common.fsproj": {
+                "projectPath": "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Fodot.Common\\Fodot.Common.fsproj"
+              },
+              "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Fodot.Core\\Fodot.Core.fsproj": {
+                "projectPath": "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Fodot.Core\\Fodot.Core.fsproj"
+              }
+            }
+          }
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "FSharp.Core": {
+              "include": "Runtime, Compile, Build, Native, Analyzers, BuildTransitive",
+              "target": "Package",
+              "version": "[9.0.202, )",
+              "generatePathProperty": true
+            },
+            "Godot.SourceGenerators": {
+              "target": "Package",
+              "version": "[4.6.1, )",
+              "autoReferenced": true,
+              "generatePathProperty": true
+            },
+            "GodotSharp": {
+              "target": "Package",
+              "version": "[4.6.1, )",
+              "autoReferenced": true,
+              "generatePathProperty": true
+            },
+            "GodotSharpEditor": {
+              "target": "Package",
+              "version": "[4.6.1, )",
+              "autoReferenced": true,
+              "generatePathProperty": true
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.204/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Godot.Bridge\\Godot.Bridge.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Godot.Bridge\\Godot.Bridge.csproj",
+        "projectName": "Godot.Bridge",
+        "projectPath": "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Godot.Bridge\\Godot.Bridge.csproj",
+        "packagesPath": "D:\\Windows\\Nuget",
+        "outputPath": "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\Godot.Bridge\\.godot\\mono\\temp\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\dasasdhba\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "D:\\Windows\\LocalNuget": {},
+          "F:\\Windows\\Godot-Source\\nuget": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.200"
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Godot.SourceGenerators": {
+              "target": "Package",
+              "version": "[4.6.1, )",
+              "autoReferenced": true
+            },
+            "GodotSharp": {
+              "target": "Package",
+              "version": "[4.6.1, )",
+              "autoReferenced": true
+            },
+            "GodotSharpEditor": {
+              "target": "Package",
+              "version": "[4.6.1, )",
+              "autoReferenced": true
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.204/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

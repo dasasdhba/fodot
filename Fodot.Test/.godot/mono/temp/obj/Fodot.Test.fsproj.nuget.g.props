@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <RestoreSuccess Condition=" '$(RestoreSuccess)' == '' ">True</RestoreSuccess>
+    <RestoreTool Condition=" '$(RestoreTool)' == '' ">NuGet</RestoreTool>
+    <ProjectAssetsFile Condition=" '$(ProjectAssetsFile)' == '' ">$(MSBuildThisFileDirectory)project.assets.json</ProjectAssetsFile>
+    <NuGetPackageRoot Condition=" '$(NuGetPackageRoot)' == '' ">D:\Windows\Nuget</NuGetPackageRoot>
+    <NuGetPackageFolders Condition=" '$(NuGetPackageFolders)' == '' ">D:\Windows\Nuget</NuGetPackageFolders>
+    <NuGetProjectStyle Condition=" '$(NuGetProjectStyle)' == '' ">PackageReference</NuGetProjectStyle>
+    <NuGetToolVersion Condition=" '$(NuGetToolVersion)' == '' ">6.13.2</NuGetToolVersion>
+  </PropertyGroup>
+  <ItemGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <SourceRoot Include="D:\Windows\Nuget\" />
+  </ItemGroup>
+  <ImportGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <Import Project="$(NuGetPackageRoot)\godot.sourcegenerators\4.6.1\build\Godot.SourceGenerators.props" Condition="Exists('$(NuGetPackageRoot)\godot.sourcegenerators\4.6.1\build\Godot.SourceGenerators.props')" />
+  </ImportGroup>
+  <PropertyGroup Condition=" '$(ExcludeRestorePackageImports)' != 'true' ">
+    <PkgGodotSharp Condition=" '$(PkgGodotSharp)' == '' ">D:\Windows\Nuget\godotsharp\4.6.1</PkgGodotSharp>
+    <PkgGodotSharpEditor Condition=" '$(PkgGodotSharpEditor)' == '' ">D:\Windows\Nuget\godotsharpeditor\4.6.1</PkgGodotSharpEditor>
+    <PkgGodot_SourceGenerators Condition=" '$(PkgGodot_SourceGenerators)' == '' ">D:\Windows\Nuget\godot.sourcegenerators\4.6.1</PkgGodot_SourceGenerators>
+    <PkgFSharp_Core Condition=" '$(PkgFSharp_Core)' == '' ">D:\Windows\Nuget\fsharp.core\9.0.202</PkgFSharp_Core>
+  </PropertyGroup>
+</Project>

@@ -17,7 +17,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-FodotBridge="*uid://cbubwvvfryogv"
+Fodot="*uid://cbubwvvfryogv"
 
 [dotnet]
 
@@ -31,6 +31,7 @@ enabled=PackedStringArray("res://addons/fodot/plugin.cfg")
 [fodot]
 
 general/main_scene=""
+general/assemblies="Fodot.Test"
 
 [physics]
 
