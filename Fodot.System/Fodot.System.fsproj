@@ -3,14 +3,16 @@
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <RootNamespace>Fodot</RootNamespace>
+        <RootNamespace>Fodot.System</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="Cutscene.fs" />
+        <Compile Include="Stage.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\Fodot.Async\Fodot.Async.fsproj" />
-      <ProjectReference Include="..\Fodot.Common\Fodot.Common.fsproj" />
-      <ProjectReference Include="..\Fodot.Core\Fodot.Core.fsproj" />
-      <ProjectReference Include="..\Fodot.System\Fodot.System.fsproj" />
     </ItemGroup>
 
 </Project>

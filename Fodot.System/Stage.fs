@@ -5,9 +5,6 @@ open Fodot.Core
 open Godot
 open Fodot.Common
 
-type ICutscene =
-    abstract member SetProgress : float -> unit
-
 type StageStatus =
      | Pending
      | Loading
