@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="Library" format=3 uid="uid://de62i5jfwqs5l"]
+
+[ext_resource type="Script" uid="uid://dxunn5nl2ltsh" path="res://library/library.gd" id="1_n7ame"]
+
+[sub_resource type="Resource" id="Resource_n7ame"]
+
+[resource]
+script = ExtResource("1_n7ame")
+lib = Dictionary[String, Resource]({
+"color": SubResource("Resource_n7ame")
+})
+metadata/_custom_type_script = "uid://dxunn5nl2ltsh"
