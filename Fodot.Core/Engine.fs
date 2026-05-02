@@ -221,6 +221,12 @@ let private treeUpdateRemoveCache physics =
         data.Remove n |> ignore
     remove.Clear ()
 
+let treeUpdateCache () =
+    treeUpdateProcessCache true
+    treeUpdateProcessCache false
+    treeUpdateRemoveCache true
+    treeUpdateRemoveCache false
+
 let private treeDoProcess physics (tree : SceneTree) =
     treeUpdateRemoveCache physics
     treeUpdateProcessCache physics
