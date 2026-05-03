@@ -7,9 +7,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="GDTask.fs" />
         <Compile Include="GodotObject.fs" />
         <Compile Include="GD.fs" />
-        <Compile Include="GDTask.fs" />
+        <Compile Include="Tween.fs" />
         <Compile Include="AsyncScene.fs" />
         <Compile Include="AsyncNode.fs" />
     </ItemGroup>

@@ -1,6 +1,7 @@
 namespace Fodot.Async
 
 open System.Threading
+open System.Threading.Tasks
 open Fodot.Core.Engine
 open Godot
 
@@ -60,7 +61,7 @@ module AsyncNode =
     let delay (time : float) (anode : AsyncNode) =
         anode |> delayWithSome None time
     
-    let delayFrameWithSome (proc : ProcessUnit option) (frame : uint) (anode : AsyncNode) =
+    let private delayFrameWithSome (proc : ProcessUnit option) (frame : uint) (anode : AsyncNode) =
         let predictor =
             let mutable counter = 0u
             Delta (fun delta ->
@@ -76,6 +77,54 @@ module AsyncNode =
     let delayFrame (frame : uint) (anode : AsyncNode) =
         anode |> delayFrameWithSome None frame
     
+    let private waitWithSome<'a> (proc : ProcessUnit option) (waitTask : Task<'a>) (anode : AsyncNode) = task {
+        do! anode |> until (Delta (fun delta ->
+            if proc.IsSome then proc.Value.Invoke delta
+            waitTask.IsCompleted
+        ))
+        return waitTask.Result
+    }
+    
+    let waitWith<'a> (proc : ProcessUnit) (waitTask : Task<'a>) (anode : AsyncNode) =
+        anode |> waitWithSome (Some proc) waitTask
+        
+    let wait<'a> (waitTask : Task<'a>) (anode : AsyncNode) =
+        anode |> waitWithSome None waitTask
+    
+    let private waitSignalWithSome (proc : ProcessUnit option) (obj : GodotObject) (signal : string) (anode : AsyncNode) =
+        let task = obj |> GodotObject.toSignalWith anode.Ct signal
+        anode |> waitWithSome proc task
+    
+    let waitSignalWith (proc : ProcessUnit) (obj : GodotObject) (signal : string) (anode : AsyncNode) =
+        anode |> waitSignalWithSome (Some proc) obj signal
+    
+    let waitSignal (obj : GodotObject) (signal : string) (anode : AsyncNode) =
+        anode |> waitSignalWithSome None obj signal
+    
+    let private waitTweenWithSome (proc : ProcessUnit option) (tween : Tween) (anode : AsyncNode) =
+        let task = tween |> Tween.asTaskWith anode.Ct
+        anode |> waitWithSome proc task
+    
+    let waitTweenWith (proc : ProcessUnit) (tween : Tween) (anode : AsyncNode) =
+        anode |> waitTweenWithSome (Some proc) tween
+    
+    let waitTween (tween : Tween) (anode : AsyncNode) =
+        anode |> waitTweenWithSome None tween
+    
+    let private runWithSome<'a> (proc : ProcessUnit option) (action : unit -> 'a) (anode : AsyncNode) =
+        let t = GDTask.runOnThreadWith anode.Ct action
+        task {
+            let! result = anode |> waitWithSome proc t
+            do! anode |> toProcessThread
+            return result
+        }
+        
+    let runWith<'a> (proc : ProcessUnit) (action : unit -> 'a) (anode : AsyncNode) =
+        anode |> runWithSome (Some proc) action
+        
+    let run<'a> (action : unit -> 'a) (anode : AsyncNode) =
+        anode |> runWithSome None action
+    
 type AsyncNode with
     member this.Until (predict : ProcessFunc<bool>) =
         this |> AsyncNode.until predict
@@ -89,3 +138,19 @@ type AsyncNode with
         this |> AsyncNode.delayFrame frame
     member this.DelayFrameWith (proc : ProcessUnit) (frame : uint) =
         this |> AsyncNode.delayFrameWith proc frame
+    member this.Wait<'a> (waitTask : Task<'a>) =
+        this |> AsyncNode.wait waitTask
+    member this.WaitWith<'a> (proc : ProcessUnit) (waitTask : Task<'a>) =
+        this |> AsyncNode.waitWith proc waitTask
+    member this.WaitSignal (obj : GodotObject) (signal : string) =
+        this |> AsyncNode.waitSignal obj signal
+    member this.WaitSignalWith (proc : ProcessUnit) (obj : GodotObject) (signal : string) =
+        this |> AsyncNode.waitSignalWith proc obj signal
+    member this.WaitTween (tween : Tween) =
+        this |> AsyncNode.waitTween tween
+    member this.WaitTweenWith (proc : ProcessUnit) (tween : Tween) =
+        this |> AsyncNode.waitTweenWith proc tween
+    member this.Run<'a> (action : unit -> 'a) =
+        this |> AsyncNode.run action
+    member this.RunWith<'a> (proc : ProcessUnit) (action : unit -> 'a) =
+        this |> AsyncNode.runWith proc action

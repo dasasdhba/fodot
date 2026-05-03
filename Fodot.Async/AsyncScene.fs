@@ -6,7 +6,6 @@ open System
 open System.Collections.Concurrent
 open System.Threading.Tasks
 open Godot
-open GodotTask
 
 type AsyncScenePool() =
     let queueLock = obj()
@@ -73,8 +72,8 @@ type AsyncScenePool() =
         
         queuedRemove <- []
     
-    member private this.CreateAddTask () = task {
-        do! GDTask.RunOnThreadPool(fun () ->
+    member private this.CreateAddTask () =
+        GDTask.runOnThread(fun () ->
             while queuedAdd.Length > 0 do
                 lock queueLock (fun () ->
                     let scene = queuedAdd.Head
@@ -82,15 +81,13 @@ type AsyncScenePool() =
                     queuedAdd <- queuedAdd.Tail
                 ) 
         )
-    }
     
-    member private this.CreateRemoveTask () = task {
-        do! GDTask.RunOnThreadPool(fun () ->
+    member private this.CreateRemoveTask () =
+        GDTask.runOnThread(fun () ->
             lock queueLock (fun () ->
                 this.Remove ()
             )
         )
-    }
     
     member this.AddList (scene : PackedScene list) =
         lock queueLock (fun () ->

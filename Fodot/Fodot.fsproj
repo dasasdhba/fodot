@@ -11,6 +11,7 @@
       <ProjectReference Include="..\Fodot.Common\Fodot.Common.fsproj" />
       <ProjectReference Include="..\Fodot.Core\Fodot.Core.fsproj" />
       <ProjectReference Include="..\Fodot.System\Fodot.System.fsproj" />
+      <ProjectReference Include="..\Fodot.Module\Fodot.Module.fsproj" />
     </ItemGroup>
 
 </Project>

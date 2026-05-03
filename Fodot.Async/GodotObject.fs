@@ -1,11 +1,14 @@
 module Fodot.Async.GodotObject
 
+open System.Threading
 open Godot
 
 // signal
 
-let toSignal (name : string) (obj : GodotObject) =
-    GodotTask.GDTask.FromSignal(obj, name)
+let toSignalWith ct (name : string) (obj : GodotObject) = task {
+    let! result = GodotTask.GDTask.FromSignal(obj, name, ct)
+    return result
+}
 
-let toSignalWith ct (name : string) (obj : GodotObject) =
-    GodotTask.GDTask.FromSignal(obj, name, ct)
+let toSignal (name : string) (obj : GodotObject) =
+    obj |> toSignalWith CancellationToken.None name
