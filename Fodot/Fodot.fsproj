@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <Target Name="CreateBinding" BeforeTargets="BeforeBuild">
-        <Exec Command="dotnet run --project ../Fodot.Generator/Fodot.Generator.fsproj -- ../project Bind/Bind.fs" />
+        <Exec Command="dotnet run --project ../Fodot.Generator/Fodot.Generator.fsproj -- ../project Bind.fs" />
     </Target>
 
     <ItemGroup>
@@ -31,7 +31,7 @@
         <Compile Include="Core\Node.fs" />
         <Compile Include="Core\PackedScene.fs" />
         <Compile Include="Core\Engine.fs" />
-        <Compile Include="Bind\Bind.fs" />
+        <Compile Include="Bind.fs" />
         <Compile Include="Library\Library.fs" />
     </ItemGroup>
 
@@ -51,7 +51,6 @@
         <Compile Include="Module\Tween.fs" />
         <Compile Include="System\Cutscene.fs" />
         <Compile Include="System\Stage.fs" />
-        <Folder Include="Bind\" />
     </ItemGroup>
 
 </Project>

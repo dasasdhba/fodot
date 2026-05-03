@@ -58,7 +58,7 @@ let toPascalCase (s: string) =
 let mapType (t: string) =
     match t with
     | "int" -> "int64"
-    | "string" -> "string"
+    | "String" -> "string"
     | x -> x
 
 let generatePropertyCodeNoLet (name: string) (prop: YamlProperty) =

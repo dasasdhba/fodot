@@ -20,6 +20,10 @@ let main args =
             printfn "Input directory does not exist: %s" inputDir
             1
         else
+            let outputDir = Path.GetDirectoryName(outputFile)
+            if outputDir <> "" && not (Directory.Exists(outputDir)) then
+                Directory.CreateDirectory(outputDir) |> ignore
+            
             let yamlFiles = getYamlFiles inputDir
             printfn "Found %d yaml files" yamlFiles.Length
             
