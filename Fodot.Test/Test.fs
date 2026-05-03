@@ -52,7 +52,7 @@ type TestScript(node : Node2D) =
         
             Callable.from (fun (s : string) -> GD.Print s) |> Callable.call "test call" |> ignore
             Callable.from (fun () -> GD.Print "test action") |> Callable.invoke |> ignore
-            Callable.from (fun (s : int64, t : string) -> (GD.Print $"{s}: {t}")) |> Callable.call (1, "234") |> ignore
+            Callable.from (fun (s : int64, t : string) -> (GD.Print $"{s}: {t}")) |> Callable.call (1, "2345") |> ignore
         )
     
     member val TestData = "哇哈哈"

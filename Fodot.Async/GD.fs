@@ -2,7 +2,7 @@ module Fodot.Async.GD
 
 open Fodot.Core
 
-type GDSignal with
+type GDSignal<'a> with
     member this.AsTask () =
         this.Object |> GodotObject.toSignal this.SignalName
         

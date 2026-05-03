@@ -8,4 +8,4 @@ type GDLib(path : string) =
     let dict = res |> GodotObject.getAsDictionary<string, Resource> "lib"
     
     member this.Get<'a when 'a :> Resource> (key : string) =
-        dict.[key] :?> 'a
+        dict[key] :?> 'a

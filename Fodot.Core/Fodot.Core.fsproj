@@ -10,8 +10,8 @@
         <Compile Include="Variant.fs" />
         <Compile Include="Callable.fs" />
         <Compile Include="GodotObject.fs" />
-        <Compile Include="FScript.fs" />
         <Compile Include="GD.fs" />
+        <Compile Include="FScript.fs" />
         <Compile Include="Node.fs" />
         <Compile Include="PackedScene.fs" />
         <Compile Include="Engine.fs" />

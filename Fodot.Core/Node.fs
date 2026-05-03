@@ -34,7 +34,7 @@ let moveChild (idx : int) (node : Node) =
     if node |> isAccessSafe then
         node.MoveChild(node, idx)
     else
-        node |> callDeferred "move_child" [| node |> Variant.from; idx |> Variant.from |]
+        node |> callDeferred "move_child" (node, idx)
 
 // node get
 
