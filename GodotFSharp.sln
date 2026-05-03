@@ -8,6 +8,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fodot.Test", "Fodot.Test\Fo
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fodot", "Fodot\Fodot.fsproj", "{865C5927-53BE-4BC7-8A81-31EE56275F23}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fodot.Generator", "Fodot.Generator\Fodot.Generator.fsproj", "{18F56E9B-4B63-4143-A05C-C5EE1302FFD7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 	Debug|Any CPU = Debug|Any CPU
@@ -39,5 +41,11 @@ Global
 		{865C5927-53BE-4BC7-8A81-31EE56275F23}.ExportDebug|Any CPU.Build.0 = ExportDebug|Any CPU
 		{865C5927-53BE-4BC7-8A81-31EE56275F23}.ExportRelease|Any CPU.ActiveCfg = ExportRelease|Any CPU
 		{865C5927-53BE-4BC7-8A81-31EE56275F23}.ExportRelease|Any CPU.Build.0 = ExportRelease|Any CPU
+		{18F56E9B-4B63-4143-A05C-C5EE1302FFD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18F56E9B-4B63-4143-A05C-C5EE1302FFD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18F56E9B-4B63-4143-A05C-C5EE1302FFD7}.ExportDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18F56E9B-4B63-4143-A05C-C5EE1302FFD7}.ExportDebug|Any CPU.Build.0 = Debug|Any CPU
+		{18F56E9B-4B63-4143-A05C-C5EE1302FFD7}.ExportRelease|Any CPU.ActiveCfg = Debug|Any CPU
+		{18F56E9B-4B63-4143-A05C-C5EE1302FFD7}.ExportRelease|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 EndGlobal

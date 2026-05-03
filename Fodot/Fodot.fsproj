@@ -6,6 +6,10 @@
         <RootNamespace>Fodot</RootNamespace>
     </PropertyGroup>
 
+    <Target Name="CreateBinding" BeforeTargets="BeforeBuild">
+        <Exec Command="dotnet run --project ../Fodot.Generator/Fodot.Generator.fsproj -- ../project Bind/Bind.fs" />
+    </Target>
+
     <ItemGroup>
         <PackageReference Include="GDTask" Version="3.0.0" />
         <PackageReference Include="FSharpPlus" Version="1.9.1" />
@@ -27,6 +31,7 @@
         <Compile Include="Core\Node.fs" />
         <Compile Include="Core\PackedScene.fs" />
         <Compile Include="Core\Engine.fs" />
+        <Compile Include="Bind\Bind.fs" />
         <Compile Include="Library\Library.fs" />
     </ItemGroup>
 
@@ -46,6 +51,7 @@
         <Compile Include="Module\Tween.fs" />
         <Compile Include="System\Cutscene.fs" />
         <Compile Include="System\Stage.fs" />
+        <Folder Include="Bind\" />
     </ItemGroup>
 
 </Project>
