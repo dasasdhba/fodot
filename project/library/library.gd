@@ -7,9 +7,10 @@ class_name Library
 @export var lib_name : String = ""
 @export var lib : Dictionary[String, Resource] = {}
 
-const FS_PROJ : String = "res://library/Fodot.Library.fsproj"
-const FS_PROJ_ITEM = "<Compile Include=\"%s\"/>"
-const FS_PROJ_ENTRY = FS_PROJ_ITEM % "Library.fs"
+const FS_PROJ : String = "res://library/library.props"
+const FS_PROJ_ITEM = "<Compile Include=\"..\\project\\library\\%s\">"
+const FS_PROJ_LINK = "<Link>Library\\%s</Link>"
+const FS_PROJ_ENTRY = "<!--Library-->"
 
 func get_lib_name():
 	if lib_name == "":
@@ -41,12 +42,13 @@ func create_fs_file():
 func add_compile_item():
 	var fs = get_fs_name()
 	var fs_compile = FS_PROJ_ITEM % fs
+	var fs_link = FS_PROJ_LINK % fs
 	var f = FileAccess.open(FS_PROJ, FileAccess.READ_WRITE)
 	var content = f.get_as_text()
 	if content.find(fs_compile) < 0:
 		var entry = content.find(FS_PROJ_ENTRY)
 		content = content.insert(entry + FS_PROJ_ENTRY.length(), 
-			"\n\t\t" + fs_compile)
+			"\n\t\t" + fs_compile + "\n\t\t\t" + fs_link + "\n\t\t</Compile>")
 		f.store_string(content)
 	f.close()
 
