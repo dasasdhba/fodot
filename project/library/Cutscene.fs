@@ -8,3 +8,4 @@ let private _back_lib = GDLib("res://system/cutscene.tres")
 
 let color = _back_lib.Get<Resource>("color")
 
+let all : Resource list = [color]

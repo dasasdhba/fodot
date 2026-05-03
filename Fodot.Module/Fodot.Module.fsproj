@@ -7,6 +7,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="Vector2.fs" />
+        <Compile Include="Color.fs" />
+        <Compile Include="Transform2D.fs" />
+        <Compile Include="CanvasItem.fs" />
         <Compile Include="Tween.fs" />
     </ItemGroup>
 

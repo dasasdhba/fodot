@@ -3,6 +3,17 @@ namespace Fodot.Module
 open Fodot.Core
 open Godot
 
+type TweenConfig =
+    {
+        Trans : Tween.TransitionType
+        Ease : Tween.EaseType
+    }
+    static member Default =
+        {
+            Trans = Tween.TransitionType.Linear
+            Ease = Tween.EaseType.InOut
+        }
+
 module Tween =
     
     let getLoopsLeft (tween : Tween) =
@@ -47,6 +58,11 @@ module Tween =
     let setTrans trans (tween : Tween) =
         tween.SetTrans trans
     
+    let setConfig (config : TweenConfig) (tween : Tween) =
+        tween
+        |> setTrans config.Trans
+        |> setEase config.Ease
+    
     let stop (tween : Tween) =
         tween.Stop ()
         
@@ -88,6 +104,11 @@ module MethodTweener =
     let setEase ease (tween : MethodTweener) =
         tween.SetEase ease
         
+    let setConfig (config : TweenConfig) (tween : MethodTweener) =
+        tween
+        |> setTrans config.Trans
+        |> setEase config.Ease
+        
 module SubtweenTweener =
     
     let setDelay (delay : float) (tween : SubtweenTweener) =
@@ -115,3 +136,8 @@ module PropertyTweener =
         
     let setEase ease (tween : PropertyTweener) =
         tween.SetEase ease
+        
+    let setConfig (config : TweenConfig) (tween : PropertyTweener) =
+        tween
+        |> setTrans config.Trans
+        |> setEase config.Ease

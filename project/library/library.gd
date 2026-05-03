@@ -27,10 +27,15 @@ func create_fs_file():
 	f.store_line("module Fodot.Library." + library + "\n")
 	f.store_line("open Godot\n")
 	f.store_line("let private _back_lib = GDLib(\"%s\")\n" % resource_path)
+	var all = ""
 	for k in lib.keys():
 		var v = lib[k]
 		var type = v.get_class()
-		f.store_line("let %s = _back_lib.Get<%s>(\"%s\")\n" % [k.to_camel_case(), type, k])
+		var kname = k.to_camel_case()
+		if all != "": all += "; "
+		all += kname
+		f.store_line("let %s = _back_lib.Get<%s>(\"%s\")\n" % [kname, type, k])
+	f.store_line("let all : Resource list = [%s]" % all)
 	f.close()
 
 func add_compile_item():

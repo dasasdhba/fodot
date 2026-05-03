@@ -78,34 +78,34 @@ module FScript =
                 |> Array.tryHead
 
                 // we don't really need multiple constructors
-                //|> Array.tryFind (fun ctor ->
-                //    let parameters = ctor.GetParameters()
+                (*|> Array.tryFind (fun ctor ->
+                    let parameters = ctor.GetParameters()
 
-                //    parameters.Length = args.Length &&
-                //    Array.forall2 (fun (param: ParameterInfo) arg ->
-                //        param.ParameterType.IsAssignableFrom(arg.GetType())
-                //    ) parameters args
-                //)
+                    parameters.Length = args.Length &&
+                    Array.forall2 (fun (param: ParameterInfo) arg ->
+                        param.ParameterType.IsAssignableFrom(arg.GetType())
+                    ) parameters args
+                )*)
 
             matchedConstructor.Invoke(args)
         })
     }
 
     type private FScriptData() =
-        inherit Resource()
+        inherit RefCounted()
         member val Keys = ConcurrentBag<string>() with get
         member val Scripts = ConcurrentBag<Object>() with get
 
     let private fScriptMeta = "_fs_script_data"
 
     let private updateScriptData (name : string) (scripts : Object list) (obj : GodotObject) =
-        let data = obj |> getMetaWithDefault fScriptMeta (lazy new FScriptData())
+        let data = obj |> getMetaWithDefaultAs fScriptMeta (lazy new FScriptData())
         data.Keys.Add name
         scripts |> List.iter (fun s -> data.Scripts.Add s)
         
     let private containsKey (name : string) (obj : GodotObject) =
         let result = monad {
-            let! data = obj |> tryGetMeta<FScriptData> fScriptMeta
+            let! data = obj |> tryGetMetaAs<FScriptData> fScriptMeta
             if data.Keys |> Seq.contains name then
                 ()
             else
@@ -114,7 +114,7 @@ module FScript =
         
         result <> None
 
-    let private getMetaAndGroupListWith filter (obj : GodotObject) =
+    let private getMetaAndGroupList (obj : GodotObject) =
         obj |> getMetaList
 
         |> List.ofSeq
@@ -127,15 +127,15 @@ module FScript =
 
         |> List.choose (fun m ->
             let s = m |> string
-            if s |> filter then
-                Some s
+            if s.StartsWith "fs_" && s.Length > 3 then
+                Some s[3..]
             else
                 None
         )
         
     let private getCallbackFScripts (obj : GodotObject) =
         let getCallArrWith (name : string) =
-            match obj |> tryCall<string[]> name [||] with
+            match obj |> tryInvokeAs<string[]> name with
             
             | Some arr -> arr |> List.ofSeq
             | None -> []
@@ -148,8 +148,7 @@ module FScript =
         let arr =
             obj
             
-            |> getMetaAndGroupListWith (fun s -> s.StartsWith "fs_" && s.Length > 3)
-            |> List.map (fun s -> s[3..])
+            |> getMetaAndGroupList
             |> List.append (obj |> getCallbackFScripts)
             |> List.distinct
             |> List.filter (fun s -> obj |> containsKey s |> not)
@@ -174,9 +173,7 @@ module FScript =
             
     let tryGet<'a> (obj : GodotObject) = monad {
         let! data =
-            obj
-            
-            |> tryGetMeta<FScriptData> fScriptMeta
+            obj |> tryGetMetaAs<FScriptData> fScriptMeta
         
         return!
             data.Scripts
@@ -190,3 +187,16 @@ module FScript =
         
     let contains<'a> (obj: GodotObject) =
         obj |> tryGet<'a> |> Option.isSome
+        
+    let attach<'a> (obj : GodotObject) =
+        let attr =
+            typeof<'a>.GetCustomAttributes(typeof<FScriptAttribute>, false)
+            |> Array.head
+            :?> FScriptAttribute
+        let name = attr.Name
+        
+        if obj |> containsKey name |> not then
+            obj |> setMeta $"fs_{name}" true
+            obj |> update
+        
+        obj |> get<'a>

@@ -13,7 +13,7 @@ let addChildInternal (child : Node) inter (node : Node) =
     if node |> isAccessSafe then
         node.AddChild(child, false, inter)
     else
-        node |> callDeferred "add_child" [| child |> Variant.from; inter |> Variant.from |]
+        node |> callDeferred "add_child" (child, inter)
 
 let addChild (child : Node) (node : Node) =
     node |> addChildInternal child Node.InternalMode.Disabled
@@ -28,7 +28,7 @@ let addSibling (sibling : Node) (node : Node) =
     if node |> isAccessSafe then
         node.AddSibling(sibling)
     else
-        node |> callDeferred "add_sibling" [| sibling |> Variant.from |]
+        node |> callDeferred "add_sibling" sibling
 
 let moveChild (idx : int) (node : Node) =
     if node |> isAccessSafe then
@@ -116,14 +116,14 @@ let createUnhandledInputEvent (node: Node) =
     node |> createEventBy child child.add_SignalUnhandledInput
 
 type private CachedEvent () =
-    inherit Resource ()
+    inherit RefCounted ()
     
     member val DeleteEvent : IEvent<unit> option = None with get, set
     member val InputEvent : IEvent<InputEvent> option = None with get, set
     member val UnhandledInputEvent : IEvent<InputEvent> option = None with get, set
     
 let private getCachedEventWith getter setter creator node =
-    let cache = node |> getMetaWithDefault "_fs_node_cached_event" (lazy new CachedEvent())
+    let cache = node |> getMetaWithDefaultAs "_fs_node_cached_event" (lazy new CachedEvent())
     match getter cache with
     | Some event -> event
     | None ->

@@ -13,7 +13,7 @@ type GDProp<'a> =
     }
     
     member this.Get () =
-        this.Object |> GodotObject.get this.PropName
+        this.Object |> GodotObject.getAs<'a> this.PropName
     member this.Set (value : 'a) =
         this.Object |> GodotObject.set this.PropName value
     static member From<'a> (prop : string) (obj : GodotObject) : GDProp<'a> =
@@ -31,7 +31,7 @@ type GDPropArray<'a> =
     }
     
     member this.Get () =
-        this.Object |> GodotObject.getArray<'a> this.PropName
+        this.Object |> GodotObject.getAsArray<'a> this.PropName
     member this.Set (value : Array<'a>) =
         this.Object |> GodotObject.set this.PropName value
     static member From<'a> (prop : string) (obj : GodotObject) : GDPropArray<'a> =
@@ -49,7 +49,7 @@ type GDPropDictionary<'a, 'b> =
     }
     
     member this.Get () =
-        this.Object |> GodotObject.getDictionary<'a,'b> this.PropName
+        this.Object |> GodotObject.getAsDictionary<'a,'b> this.PropName
     member this.Set (value : Dictionary<'a,'b>) =
         this.Object |> GodotObject.set this.PropName value
     static member From<'a, 'b> (prop : string) (obj : GodotObject) : GDPropDictionary<'a, 'b> =
@@ -68,7 +68,7 @@ type GDMeta<'a> =
     }
     
     member this.Get () =
-        this.Object |> GodotObject.getWithMeta this.PropName this.Default
+        this.Object |> GodotObject.getWithMetaAs this.PropName this.Default
     member this.Set (value : 'a) =
         this.Object |> GodotObject.setWithMeta this.PropName value
     static member From<'a> (prop : string) (def : Lazy<'a>) (obj : GodotObject) : GDMeta<'a> =
@@ -88,7 +88,7 @@ type GDMetaArray<'a> =
     }
     
     member this.Get () =
-        this.Object |> GodotObject.getArrayWithMeta this.PropName this.Default
+        this.Object |> GodotObject.getWithMetaAsArray this.PropName this.Default
     member this.Set (value : Array<'a>) =
         this.Object |> GodotObject.setWithMeta this.PropName value
     static member From<'a> (prop : string) (def : Lazy<Array<'a>>) (obj : GodotObject) : GDMetaArray<'a> =
@@ -108,7 +108,7 @@ type GDMetaDictionary<'a, 'b> =
     }
     
     member this.Get () =
-        this.Object |> GodotObject.getDictionaryWithMeta this.PropName this.Default
+        this.Object |> GodotObject.getWithMetaAsDictionary this.PropName this.Default
     member this.Set (value : Array<'a>) =
         this.Object |> GodotObject.setWithMeta this.PropName value
     static member From<'a, 'b> (prop : string) (def : Lazy<Dictionary<'a, 'b>>) (obj : GodotObject) : GDMetaDictionary<'a, 'b> =
@@ -118,45 +118,46 @@ type GDMetaDictionary<'a, 'b> =
             Default = def
         }
 
-type GDSignal =
+type GDSignal<'a> =
     {
         Object : GodotObject
         SignalName : string
     }
     member private this.signalName = new StringName(this.SignalName)
     
-    static member From (signal : string) (obj : GodotObject) =
+    static member From (signal : string) (obj : GodotObject) : GDSignal<'a> =
         {
             Object = obj
             SignalName = signal
         }
     
-    member this.AddWith (flags : GodotObject.ConnectFlags) (call : Callable) =
+    member this.AddWithFlag (call : 'a -> unit) (flags : GodotObject.ConnectFlags) =
         this.Object.Connect(
             this.signalName,
-            call,
+            Callable.from call,
             uint32 flags
         )
         
-    member this.Add (call : Callable) =
+    member this.Add (call : 'a -> unit) =
         this.Object.Connect(
             this.signalName,
-            call
+            Callable.from call
         )
         
-    member this.Remove (call : Callable) =
+    member this.Remove (call : 'a -> unit)=
         this.Object.Disconnect(
             this.signalName,
-            call
+            Callable.from call
         )
         
-    member this.Emit ([<ParamArray>] args : Variant array) =
-        this.Object.EmitSignal(this.signalName, args)
-
-module GD =
+    member this.Emit (args : 'a) =
+        this.Object.EmitSignal(this.signalName, args |> Variant.fromTuple)
     
+module GD =
     let private loadLock = obj()
     
+    /// This will not init fscript, as we cannot deal with recursive case,
+    /// i.e. we cannot get the subresource. 
     let load (path : string) =
         lock loadLock (fun () ->
             GD.Load path

@@ -22,7 +22,7 @@ type ProcessFunc<'a> =
 type ProcessUnit = ProcessFunc<unit>
     
 type private ProcessData() =
-    inherit Resource ()
+    inherit RefCounted ()
     member val Process = ConcurrentDictionary<Guid, ProcessUnit>() with get
     member this.HasProcess () =
         this.Process.Count > 0
@@ -55,7 +55,7 @@ let private getProcessDataMeta physics =
 let private getProcessData physics (node: Node) =
     let meta = getProcessDataMeta physics
     if node |> hasMeta meta then
-        node |> getMeta<ProcessData> meta
+        node |> getMetaAs<ProcessData> meta
     else
         node.add_TreeEntered (fun () -> node |> updateProcessCache physics)
         node.add_TreeExited (fun () -> node |> updateRemoveCache physics)

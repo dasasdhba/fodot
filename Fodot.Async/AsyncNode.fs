@@ -111,6 +111,16 @@ module AsyncNode =
     let waitTween (tween : Tween) (anode : AsyncNode) =
         anode |> waitTweenWithSome None tween
     
+    let private waitEventWithSome (proc : ProcessUnit option) (event: IEvent<'Delegate, 'Args>) (anode : AsyncNode) =
+        let task = GDTask.awaitEvent event anode.Ct
+        anode |> waitWithSome proc task
+        
+    let waitEventWith (proc : ProcessUnit) (event: IEvent<'Delegate, 'Args>) (anode : AsyncNode) =
+        anode |> waitEventWithSome (Some proc) event
+        
+    let waitEvent (event: IEvent<'Delegate, 'Args>) (anode : AsyncNode) =
+        anode |> waitEventWithSome None event
+        
     let private runWithSome<'a> (proc : ProcessUnit option) (action : unit -> 'a) (anode : AsyncNode) =
         let t = GDTask.runOnThreadWith anode.Ct action
         task {
@@ -150,6 +160,10 @@ type AsyncNode with
         this |> AsyncNode.waitTween tween
     member this.WaitTweenWith (proc : ProcessUnit) (tween : Tween) =
         this |> AsyncNode.waitTweenWith proc tween
+    member this.WaitEvent (event: IEvent<'Delegate, 'Args>) =
+        this |> AsyncNode.waitEvent event
+    member this.WaitEventWith (proc : ProcessUnit) (event: IEvent<'Delegate, 'Args>) =
+        this |> AsyncNode.waitEventWith proc event
     member this.Run<'a> (action : unit -> 'a) =
         this |> AsyncNode.run action
     member this.RunWith<'a> (proc : ProcessUnit) (action : unit -> 'a) =
