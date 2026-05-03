@@ -77,6 +77,20 @@ let fromObj (value: obj) =
     | :? StringName as v -> Variant.CreateFrom v
     | :? NodePath as v -> Variant.CreateFrom v
     | :? Rid as v -> Variant.CreateFrom v
+    | :? (byte[]) as v -> Variant.CreateFrom v
+    | :? (int[]) as v -> Variant.CreateFrom v
+    | :? (int64[]) as v -> Variant.CreateFrom v
+    | :? (float32[]) as v -> Variant.CreateFrom v
+    | :? (float[]) as v -> Variant.CreateFrom v
+    | :? (string[]) as v -> Variant.CreateFrom v
+    | :? (Vector2[]) as v -> Variant.CreateFrom v
+    | :? (Vector3[]) as v -> Variant.CreateFrom v
+    | :? (Vector4[]) as v -> Variant.CreateFrom v
+    | :? (Color[]) as v -> Variant.CreateFrom v
+    | :? (GodotObject[]) as v -> Variant.CreateFrom v
+    | :? (StringName[]) as v -> Variant.CreateFrom v
+    | :? (NodePath[]) as v -> Variant.CreateFrom v
+    | :? (Rid[]) as v -> Variant.CreateFrom v
     | _ -> failwith $"Variant: cannot convert {value}."
 
 let fromTuple (value: 'a) =
