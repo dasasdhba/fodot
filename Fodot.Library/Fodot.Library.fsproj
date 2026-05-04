@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <RootNamespace>Fodot.Library</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Library.fs"/>
+    </ItemGroup>
+
+    <Import Project="..\project\library\library.props" />
+
+    <ItemGroup>
+        <ProjectReference Include="..\Fodot\Fodot.fsproj" />
+    </ItemGroup>
+
+</Project>

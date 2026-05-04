@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <RootNamespace>Fodot.Bind</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Bind.fs"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Fodot\Fodot.fsproj" />
+    </ItemGroup>
+
+</Project>

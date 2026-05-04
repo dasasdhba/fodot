@@ -1,7 +1,7 @@
 <Project>
 	<ItemGroup>
 		<Compile Include="..\project\library\Cutscene.fs">
-			<Link>Library\Cutscene.fs</Link>
+			<Link>Cutscene.fs</Link>
 		</Compile>
 	</ItemGroup>
 </Project>

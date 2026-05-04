@@ -27,26 +27,12 @@
         <Compile Include="Core\Node.fs" />
         <Compile Include="Core\PackedScene.fs" />
         <Compile Include="Core\Engine.fs" />
-        <Compile Include="Bind.fs" />
-        <Compile Include="Library\Library.fs" />
-    </ItemGroup>
-
-    <Import Project="..\project\library\library.props" />
-
-    <ItemGroup>
         <Compile Include="Async\GDTask.fs" />
         <Compile Include="Async\GodotObject.fs" />
         <Compile Include="Async\GD.fs" />
         <Compile Include="Async\Tween.fs" />
         <Compile Include="Async\AsyncScene.fs" />
         <Compile Include="Async\AsyncNode.fs" />
-        <Compile Include="Module\Vector2.fs" />
-        <Compile Include="Module\Color.fs" />
-        <Compile Include="Module\Transform2D.fs" />
-        <Compile Include="Module\CanvasItem.fs" />
-        <Compile Include="Module\Tween.fs" />
-        <Compile Include="System\Cutscene.fs" />
-        <Compile Include="System\Stage.fs" />
     </ItemGroup>
 
 </Project>

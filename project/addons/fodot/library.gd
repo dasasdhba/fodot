@@ -9,7 +9,7 @@ class_name Library
 
 const FS_PROJ : String = "res://library/library.props"
 const FS_PROJ_ITEM = "<Compile Include=\"..\\project\\library\\%s\">"
-const FS_PROJ_LINK = "<Link>Library\\%s</Link>"
+const FS_PROJ_LINK = "<Link>%s</Link>"
 
 func get_lib_name():
 	if lib_name == "":
