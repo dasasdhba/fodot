@@ -1,13 +1,12 @@
-using Godot;
 using Godot.Collections;
 
-namespace GodotCSharp;
+namespace Godot;
+
+#if TOOLS
 
 [Tool]
 public partial class FodotYamlImporter : EditorImportPlugin
 {
-#if TOOLS && DEBUG
-
     public override bool _CanImportThreaded()
         => true;
     
@@ -62,6 +61,6 @@ public partial class FodotYamlImporter : EditorImportPlugin
 
         return Error.Ok;
     }
-
-#endif    
 }
+
+#endif

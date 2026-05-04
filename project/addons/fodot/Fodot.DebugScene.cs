@@ -1,13 +1,12 @@
-using Godot;
+using Godot.Common;
 
-namespace GodotCSharp;
+namespace Godot;
 
 public partial class FodotMain
 {
 #if TOOLS
 
-    public const string DebugScenePath = "res://fodot_debug_scene";
-    
+    private static string DebugScenePath => FodotEditor.DebugScenePath;
     private string _lastPath = "";
 
     private void UpdateDebugScene()

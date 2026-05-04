@@ -17,7 +17,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-Fodot="*res://addons/Fodot/Bridge.cs"
+Fodot="*uid://bos17qptdhwfj"
 
 [dotnet]
 

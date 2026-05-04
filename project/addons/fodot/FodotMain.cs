@@ -1,27 +1,26 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Godot;
-using GodotCSharp.Common;
+using Godot.Common;
 
-namespace GodotCSharp;
+namespace Godot;
 
 [Tool]
 public partial class FodotMain : EditorPlugin
 {
-    private const string MainSceneKey = "fodot/general/main_scene";
     private const string AssemblyKey = "fodot/general/assemblies";
-    private const string LibraryKey = "fodot/general/library_schedule_time";
-    private const string BridgeKey = "Fodot";
-    private const string BridgeFile = "Bridge.cs";
     
-    public static string ProjectMainScene => Plugin.GetProjectSetting(MainSceneKey, "");
     public static HashSet<string> ProjectAssemblies => 
         Plugin.GetProjectSetting(AssemblyKey, "")
             .Split(["\n", "\r", "\r\n"], StringSplitOptions.RemoveEmptyEntries)
             .ToHashSet();
 
 #if TOOLS    
+    
+    private static string MainSceneKey => FodotEditor.MainSceneKey;
+    private const string LibraryKey = "fodot/general/library_schedule_time";
+    private const string BridgeKey = "Fodot";
+    private const string BridgeFile = "FodotEntry.cs";
 
     private static float LibraryScheduleTime => Plugin.GetProjectSetting(LibraryKey, 3.0f);
     

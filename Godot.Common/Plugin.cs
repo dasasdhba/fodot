@@ -1,10 +1,12 @@
-using Godot;
 using Godot.Collections;
 
-namespace GodotCSharp.Common;
+namespace Godot.Common;
+
+#if TOOLS
 
 public static class Plugin
 {
+
     public static void AddProjectSetting(string key, Variant @default, Variant.Type type, PropertyHint hint = PropertyHint.None, string hintStr = "")
     {
         if (!ProjectSettings.HasSetting(key))
@@ -32,4 +34,7 @@ public static class Plugin
         
         return ProjectSettings.GetSetting(key).As<T>();
     }
+    
 }
+
+#endif

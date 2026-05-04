@@ -2,11 +2,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Fodot.Generator;
-using Godot;
 using Godot.Collections;
-using FileAccess = Godot.FileAccess;
 
-namespace GodotCSharp;
+namespace Godot;
 
 public partial class FodotMain
 {

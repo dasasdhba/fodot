@@ -1,10 +1,9 @@
 using System.Linq;
 using System.Reflection;
-using Godot;
 
-namespace GodotCSharp;
+namespace Godot;
 
-public partial class Bridge : Node
+public partial class FodotEntry : Node
 {
     public override void _EnterTree()
     {
