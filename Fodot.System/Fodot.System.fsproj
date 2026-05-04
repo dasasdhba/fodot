@@ -12,6 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Fodot.Async\Fodot.Async.fsproj" />
         <ProjectReference Include="..\Fodot.Library\Fodot.Library.fsproj" />
         <ProjectReference Include="..\Fodot.Module\Fodot.Module.fsproj" />
     </ItemGroup>

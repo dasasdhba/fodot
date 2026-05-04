@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="GDTask" Version="3.0.0" />
         <PackageReference Include="FSharpPlus" Version="1.9.1" />
     </ItemGroup>
 
@@ -27,12 +26,6 @@
         <Compile Include="Core\Node.fs" />
         <Compile Include="Core\PackedScene.fs" />
         <Compile Include="Core\Engine.fs" />
-        <Compile Include="Async\GDTask.fs" />
-        <Compile Include="Async\GodotObject.fs" />
-        <Compile Include="Async\GD.fs" />
-        <Compile Include="Async\Tween.fs" />
-        <Compile Include="Async\AsyncScene.fs" />
-        <Compile Include="Async\AsyncNode.fs" />
     </ItemGroup>
 
 </Project>

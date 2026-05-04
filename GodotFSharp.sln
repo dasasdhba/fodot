@@ -18,6 +18,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fodot.Module", "Fodot.Modul
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fodot.System", "Fodot.System\Fodot.System.fsproj", "{0025A86A-72D8-427D-AE05-36B912E84DEE}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fodot.Async", "Fodot.Async\Fodot.Async.fsproj", "{081A6FBD-66AA-4AF3-874A-E006E19AE18F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 	Debug|Any CPU = Debug|Any CPU
@@ -79,5 +81,11 @@ Global
 		{0025A86A-72D8-427D-AE05-36B912E84DEE}.ExportDebug|Any CPU.Build.0 = Debug|Any CPU
 		{0025A86A-72D8-427D-AE05-36B912E84DEE}.ExportRelease|Any CPU.ActiveCfg = Debug|Any CPU
 		{0025A86A-72D8-427D-AE05-36B912E84DEE}.ExportRelease|Any CPU.Build.0 = Debug|Any CPU
+		{081A6FBD-66AA-4AF3-874A-E006E19AE18F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{081A6FBD-66AA-4AF3-874A-E006E19AE18F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{081A6FBD-66AA-4AF3-874A-E006E19AE18F}.ExportDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{081A6FBD-66AA-4AF3-874A-E006E19AE18F}.ExportDebug|Any CPU.Build.0 = Debug|Any CPU
+		{081A6FBD-66AA-4AF3-874A-E006E19AE18F}.ExportRelease|Any CPU.ActiveCfg = Debug|Any CPU
+		{081A6FBD-66AA-4AF3-874A-E006E19AE18F}.ExportRelease|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 EndGlobal

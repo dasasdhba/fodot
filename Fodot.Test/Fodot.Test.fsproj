@@ -11,7 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Fodot\Fodot.fsproj" />
+      <ProjectReference Include="..\Fodot.Async\Fodot.Async.fsproj" />
     </ItemGroup>
 
 </Project>
