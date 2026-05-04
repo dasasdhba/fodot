@@ -1,5 +1,5 @@
 ﻿open System.IO
-open Fodot.Generator.Generator
+open Fodot.Generator.Parser
 
 let rec getYamlFiles (dir: string) =
     let files = Directory.GetFiles(dir, "*.yaml")
@@ -13,11 +13,11 @@ let main args =
         printfn "Usage: Fodot.Generator <inputDir> <outputFile>"
         1
     else
-        let inputDir = args.[0]
-        let outputFile = args.[1]
+        let inputDir = args[0]
+        let outputFile = args[1]
         
         if not (Directory.Exists(inputDir)) then
-            printfn "Input directory does not exist: %s" inputDir
+            printfn $"Input directory does not exist: {inputDir}"
             1
         else
             let outputDir = Path.GetDirectoryName(outputFile)
@@ -25,25 +25,20 @@ let main args =
                 Directory.CreateDirectory(outputDir) |> ignore
             
             let yamlFiles = getYamlFiles inputDir
-            printfn "Found %d yaml files" yamlFiles.Length
+            printfn $"Found {yamlFiles.Length} yaml files"
             
             let codes = 
                 yamlFiles 
-                |> Array.map (fun file ->
-                    let content = File.ReadAllText(file)
-                    let yaml = parseYaml content
-                    let fileName = Path.GetFileNameWithoutExtension(file)
-                    let typeName = toPascalCase fileName
-                    generateCode yaml typeName)
+                |> Array.map (fun file -> createFsString file)
                 |> Array.toList
             
             let fullCode = 
                 "namespace Fodot.Bind\n\n" +
                 "open Fodot.Core\n" +
                 "open Godot\n\n" +
-                (codes |> String.concat "\n")
+                (codes |> String.concat "\n\n")
             
             File.WriteAllText(outputFile, fullCode)
-            printfn "Generated: %s" outputFile
+            printfn $"Generated: %s{outputFile}"
             printfn "Done!"
             0

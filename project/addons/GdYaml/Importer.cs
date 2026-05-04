@@ -18,7 +18,7 @@ public partial class Importer : EditorImportPlugin
         => "Gdscript Yaml Importer";
 
     public override string[] _GetRecognizedExtensions()
-        => new string[] { "yaml" };
+        => [ "yaml" ];
 
     public override string _GetSaveExtension()
         => "gd";
@@ -35,15 +35,27 @@ public partial class Importer : EditorImportPlugin
 
     public override int _GetImportOrder() => 1;
 
+    public override Array<Dictionary> _GetImportOptions(string path, int presetIndex)
+        => [];
+    
     public override Error _Import(string sourceFile, string savePath,
         Dictionary options, Array<string> _, Array<string> __)
     {
-        var script = new GDScript();
+        var path = ProjectSettings.GlobalizePath(sourceFile);
+        var final = savePath + "." + _GetSaveExtension();
+        var code = Fodot.Generator.Parser.createGdString(path);
         
-        // TODO: generate
-        script.SourceCode = "";
+        var script = new GDScript();
+        script.SourceCode = code;
+        script.ResourcePath = final;
+        var err = script.Reload();
+        if (err != Error.Ok)
+        {
+            GD.PrintErr($"YAML import failed: ({err})");
+            return err;
+        }
             
-        ResourceSaver.Save(script, savePath + "." + _GetSaveExtension());
+        ResourceSaver.Save(script, final);
 
         return Error.Ok;
     }

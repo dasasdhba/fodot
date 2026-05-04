@@ -1,0 +1,44 @@
+extends: Node
+
+property:
+
+  test_category:
+    type : export_category
+
+  my_int:
+    type: int
+    value: 10
+
+  test_group:
+    type : export_group
+    value : my
+
+  my_str:
+    type : string
+    value : "hello"
+    hint : PROPERTY_HINT_MULTILINE_TEXT
+    hint_string : ""
+    usage : PROPERTY_USAGE_EDITOR
+
+  test_subgroup:
+    type : export_subgroup
+
+  my_scene:
+    type : PackedScene
+    value : null
+
+  my_array:
+    type: Array[int]
+    value: "[]"
+
+  my_dict:
+    type: Dictionary[string, int]
+    value: "{}"
+
+signal:
+
+  my_signal: []
+
+  my_arg_signal:
+    - name : "arg1"
+      type : int

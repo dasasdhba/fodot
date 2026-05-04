@@ -26,7 +26,7 @@ project/solution_directory="../"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/fodot/plugin.cfg")
+enabled=PackedStringArray("res://addons/GdYaml/plugin.cfg", "res://addons/fodot/plugin.cfg")
 
 [fodot]
 

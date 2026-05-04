@@ -1,0 +1,14 @@
+[remap]
+
+importer="gdyaml.plugin"
+type="GDScript"
+uid="uid://ckh40ajakm0mg"
+path="res://.godot/imported/example.yaml-c85a7054cda705388941d6eea8d13010.gd"
+
+[deps]
+
+source_file="res://example.yaml"
+dest_files=["res://.godot/imported/example.yaml-c85a7054cda705388941d6eea8d13010.gd"]
+
+[params]
+

@@ -6,6 +6,7 @@
     <RootNamespace>GodotCSharp</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Fodot.Generator\Fodot.Generator.fsproj" />
     <ProjectReference Include="..\Fodot\Fodot.fsproj" />
     <ProjectReference Include="..\Fodot.Test\Fodot.Test.fsproj" />
   </ItemGroup>

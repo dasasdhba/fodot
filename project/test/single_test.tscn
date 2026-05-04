@@ -5,7 +5,7 @@
 [ext_resource type="Resource" uid="uid://c38nb53weutc1" path="res://test/new_resource.tres" id="3_mafe7"]
 [ext_resource type="PackedScene" uid="uid://ovdevsj3sl8t" path="res://test/single_gd_test.tscn" id="4_kblmv"]
 
-[node name="SingleTest" type="Node2D" unique_id=1370197312]
+[node name="SingleTest" type="Node" unique_id=2020488105]
 
 [node name="Icon" type="Sprite2D" parent="." unique_id=560232545]
 position = Vector2(64, 64)
