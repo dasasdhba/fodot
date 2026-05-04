@@ -41,7 +41,7 @@ let moveChild (idx : int) (node : Node) =
 let getNode<'a when 'a: not struct and 'a :> Node> (name : string) (node : Node) =
     node.GetNode<'a>(name)
 
-let tryGetNode<'a when 'a: not struct and 'a :> Node> (name : string) (node : Node) =
+let tryGetNode<'a when 'a: not struct and 'a : null and 'a :> Node> (name : string) (node : Node) =
     match node.GetNodeOrNull<'a> name with
     | null -> None
     | node -> Some node
@@ -52,15 +52,15 @@ let getChildInternal<'a when 'a: not struct and 'a :> Node> (idx : int) (node : 
 let getChild<'a when 'a: not struct and 'a :> Node> (idx : int) (node : Node) =
     node.GetChild<'a>(idx)
 
-let private tryGetChildWith<'a when 'a: not struct and 'a :> Node> (idx: int) inter (node : Node) =
+let private tryGetChildWith<'a when 'a: not struct and 'a : null and 'a :> Node> (idx: int) inter (node : Node) =
     match node.GetChildOrNull<'a>(idx, inter) with
     | null -> None
     | node -> Some node
 
-let tryGetChild<'a when 'a: not struct and 'a :> Node> (idx : int) (node : Node) =
+let tryGetChild<'a when 'a: not struct and 'a : null and 'a :> Node> (idx : int) (node : Node) =
     node |> tryGetChildWith<'a> idx false
 
-let tryGetChildInternal<'a when 'a: not struct and 'a :> Node> (idx : int) (node : Node) =
+let tryGetChildInternal<'a when 'a: not struct and 'a : null and 'a :> Node> (idx : int) (node : Node) =
     node |> tryGetChildWith<'a> idx true
 
 let rec getChildrenRecWith filter (node: Node) =
