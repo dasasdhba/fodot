@@ -13,4 +13,3 @@ lib = Dictionary[String, Resource]({
 "color": SubResource("Resource_o3a7g")
 })
 metadata/_custom_type_script = "uid://cgxn62mahi576"
-metadata/_fs_yaml_parent = "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\project\\module\\Fodot.System\\Fodot.System.fsproj"

@@ -61,11 +61,6 @@ public partial class FodotMain
             var md = FileAccess.GetMd5(k);
             if (_cachedMd5.GetValueOrDefault(k, "") != md)
             {
-                var res = _cachedLib[k];
-                var globalPath = ProjectSettings.GlobalizePath(k);
-                var globalDir = Path.GetDirectoryName(globalPath);
-                var parent = Parser.findParentFsproj(globalDir);
-                res.SetMeta("_fs_yaml_parent", parent);
                 _cachedMd5[k] = md;
                 updated = true;
             }
@@ -77,7 +72,9 @@ public partial class FodotMain
         foreach (var k in _cachedLib.Keys)
         {
             var res = _cachedLib[k];
-            var parent = _cachedLib[k].GetMeta("_fs_yaml_parent", "null").As<string>();
+            var globalPath = ProjectSettings.GlobalizePath(k);
+            var globalDir = Path.GetDirectoryName(globalPath);
+            var parent = Parser.findParentFsproj(globalDir);
             if (!total.TryGetValue(parent, out var l))
             {
                 total.Add(parent, [res]);

@@ -7,8 +7,8 @@ open Godot
 module Cutscene =
     let private _back_lib = GDLib("uid://by2q4qqhevgok")
 
-    let color = _back_lib.Get<Resource>("color")
     let block = _back_lib.Get<Resource>("block")
+    let color = _back_lib.Get<Resource>("color")
 
     let lib = _back_lib.Lib
-    let all : Resource list = [color; block]
+    let all : Resource list = [block; color]
