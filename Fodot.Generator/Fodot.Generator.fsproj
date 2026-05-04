@@ -11,7 +11,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="MagnusOpera.PresqueYaml" Version="0.25.0" />
       <PackageReference Include="YamlDotNet" Version="17.1.0" />
     </ItemGroup>
 

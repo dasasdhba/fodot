@@ -6,10 +6,6 @@
         <RootNamespace>Fodot</RootNamespace>
     </PropertyGroup>
 
-    <Target Name="CreateBinding" BeforeTargets="BeforeBuild">
-        <Exec Command="dotnet run --project ../Fodot.Generator/Fodot.Generator.fsproj -- ../project Bind.fs" />
-    </Target>
-
     <ItemGroup>
         <PackageReference Include="GDTask" Version="3.0.0" />
         <PackageReference Include="FSharpPlus" Version="1.9.1" />

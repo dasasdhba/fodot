@@ -9,6 +9,10 @@ property:
     type: int
     value: 10
 
+  my_float:
+    type: float
+    value: 200.0
+
   test_group:
     type : export_group
     value : my
@@ -19,6 +23,14 @@ property:
     hint : PROPERTY_HINT_MULTILINE_TEXT
     hint_string : ""
     usage : PROPERTY_USAGE_EDITOR
+
+  my_bool :
+    type : bool
+    value : true
+
+  my_vector:
+    type : Vector2
+    value : Vector2(0,0)
 
   test_subgroup:
     type : export_subgroup

@@ -1,11 +1,11 @@
 using Godot;
 
-namespace GodotCSharp.GdYaml;
+namespace GodotCSharp.FodotYaml;
 
 [Tool]
-public partial class GdYaml : EditorPlugin
+public partial class FodotYaml : EditorPlugin
 {
-#if TOOLS
+#if TOOLS && DEBUG
 
     private Importer _importer;
 

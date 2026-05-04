@@ -1,6 +1,6 @@
 [remap]
 
-importer="gdyaml.plugin"
+importer="fodot.yaml.plugin"
 type="GDScript"
 uid="uid://ckh40ajakm0mg"
 path="res://.godot/imported/example.yaml-c85a7054cda705388941d6eea8d13010.gd"

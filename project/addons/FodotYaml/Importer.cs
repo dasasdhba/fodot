@@ -1,21 +1,22 @@
+using System.IO;
 using Godot;
 using Godot.Collections;
 
-namespace GodotCSharp.GdYaml;
+namespace GodotCSharp.FodotYaml;
 
 [Tool]
 public partial class Importer : EditorImportPlugin
 {
-#if TOOLS
+#if TOOLS && DEBUG
 
     public override bool _CanImportThreaded()
         => true;
     
     public override string _GetImporterName()
-        => "gdyaml.plugin";
+        => "fodot.yaml.plugin";
 
     public override string _GetVisibleName()
-        => "Gdscript Yaml Importer";
+        => "Fodot Yaml Importer";
 
     public override string[] _GetRecognizedExtensions()
         => [ "yaml" ];
@@ -54,6 +55,11 @@ public partial class Importer : EditorImportPlugin
             GD.PrintErr($"YAML import failed: ({err})");
             return err;
         }
+        
+        var root = ProjectSettings.GlobalizePath("res://project.godot").GetBaseDir();
+        var dir = Directory.GetParent(root)?.FullName;
+        var binding = $@"{dir}\Fodot\Bind.fs";
+        Fodot.Generator.Parser.createFsBinding(root, binding);
             
         ResourceSaver.Save(script, final);
 

@@ -1,0 +1,1 @@
+dotnet run --project Fodot.Generator.fsproj -- ../project ../Fodot/Bind.fs

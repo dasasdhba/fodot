@@ -328,3 +328,35 @@ let createFsString (file : string) =
     let name = Path.GetFileNameWithoutExtension(file) |> toPascalCase
     yaml.AsFs name
     
+let rec getYamlFiles (dir: string) =
+    let files = Directory.GetFiles(dir, "*.yaml")
+    let subDirs = Directory.GetDirectories(dir)
+    let subFiles = subDirs |> Array.collect getYamlFiles
+    Array.concat [files; subFiles]
+    
+let createFsBinding (inputDir : string) (outputFile : string) =
+    if not (Directory.Exists(inputDir)) then
+        printfn $"Input directory does not exist: {inputDir}"
+        ()
+    else
+        let outputDir = Path.GetDirectoryName(outputFile)
+        if outputDir <> "" && not (Directory.Exists(outputDir)) then
+            Directory.CreateDirectory(outputDir) |> ignore
+        
+        let yamlFiles = getYamlFiles inputDir
+        printfn $"Found {yamlFiles.Length} yaml files"
+        
+        let codes = 
+            yamlFiles 
+            |> Array.map (fun file -> createFsString file)
+            |> Array.toList
+        
+        let fullCode = 
+            "namespace Fodot.Bind\n\n" +
+            "open Fodot.Core\n" +
+            "open Godot\n\n" +
+            (codes |> String.concat "\n\n")
+        
+        File.WriteAllText(outputFile, fullCode)
+        printfn $"Generated: %s{outputFile}"
+        printfn "Done!"
