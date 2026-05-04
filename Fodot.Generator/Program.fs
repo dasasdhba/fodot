@@ -2,12 +2,11 @@
 
 [<EntryPoint>]
 let main args =
-    if args.Length < 2 then
-        printfn "Usage: Fodot.Generator <inputDir> <outputFile>"
+    if args.Length < 1 then
+        printfn "Usage: Fodot.Generator <inputDir>"
         1
     else
         let inputDir = args[0]
-        let outputFile = args[1]
         
-        createFsBinding inputDir outputFile
+        createFsBinding inputDir
         0

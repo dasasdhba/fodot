@@ -328,35 +328,76 @@ let createFsString (file : string) =
     let name = Path.GetFileNameWithoutExtension(file) |> toPascalCase
     yaml.AsFs name
     
-let rec getYamlFiles (dir: string) =
-    let files = Directory.GetFiles(dir, "*.yaml")
-    let subDirs = Directory.GetDirectories(dir)
-    let subFiles = subDirs |> Array.collect getYamlFiles
-    Array.concat [files; subFiles]
+let rec findParentFsproj (dir: string) =
+    let files = Directory.GetFiles(dir)
+    match files with
     
-let createFsBinding (inputDir : string) (outputFile : string) =
+    | fs when fs |> Array.exists (fun f -> Path.GetExtension(f) = ".sln") ->
+        "null"
+    | fs ->
+        let fsproj = fs |> Array.tryFind (fun f -> Path.GetExtension(f) = ".fsproj")
+        match fsproj with
+        
+        | Some f -> f
+        | None ->
+            findParentFsproj (Directory.GetParent(dir).FullName)
+    
+let rec getYamlFiles (dir: string) : Dictionary<string, string list>  =
+    let files = Directory.GetFiles(dir, "*.yaml")
+    let dict = Dictionary<string, string list>()
+    if files.Length > 0 then
+        let fsproj = findParentFsproj dir
+        dict[fsproj] <- files |> List.ofArray
+    
+    Directory.GetDirectories(dir)
+    
+    |> Array.fold (fun acc d ->
+        let m = getYamlFiles d
+        for k in m.Keys do
+            if acc.ContainsKey(k) then
+                acc[k] <- acc[k] @ m[k]
+            else
+                acc[k] <- m[k]
+        acc
+    ) dict
+    
+let createFsBinding (inputDir : string)=
     if not (Directory.Exists(inputDir)) then
         printfn $"Input directory does not exist: {inputDir}"
-        ()
     else
-        let outputDir = Path.GetDirectoryName(outputFile)
-        if outputDir <> "" && not (Directory.Exists(outputDir)) then
-            Directory.CreateDirectory(outputDir) |> ignore
-        
+        let inputDir = Path.GetFullPath(inputDir)
         let yamlFiles = getYamlFiles inputDir
-        printfn $"Found {yamlFiles.Length} yaml files"
         
-        let codes = 
-            yamlFiles 
-            |> Array.map (fun file -> createFsString file)
-            |> Array.toList
-        
-        let fullCode = 
-            "namespace Fodot.Bind\n\n" +
-            "open Fodot.Core\n" +
-            "open Godot\n\n" +
-            (codes |> String.concat "\n\n")
-        
-        File.WriteAllText(outputFile, fullCode)
-        printfn $"Generated: %s{outputFile}"
-        printfn "Done!"
+        for k in yamlFiles.Keys do
+            let files = yamlFiles[k]
+            match k with
+            | "null" ->
+                let all =
+                    files
+                    |> List.map Path.GetFileNameWithoutExtension
+                    |> String.concat ", "
+                printfn $"Cannot find parent fsproj for {all}.\n Binding will not be created."
+            | fsproj ->
+                let codes = 
+                    files 
+                    |> List.map createFsString
+
+                let name = Path.GetFileNameWithoutExtension(fsproj)
+                let fullCode = 
+                    $"namespace {name}.Bind\n\n" +
+                    "open Fodot.Core\n" +
+                    "open Godot\n\n" +
+                    (codes |> String.concat "\n\n")
+                
+                let file = Path.GetDirectoryName(fsproj) + "/Bind.fs"
+                File.WriteAllText(file, fullCode)
+                printfn $"Generated {files.Length} binding types for {name}"
+                
+                let proj = File.ReadAllText fsproj
+                let compile = "<Compile Include=\"Bind.fs\" />"
+                if proj.Contains compile |> not then
+                    let first = proj.IndexOf "<Compile Include="
+                    let line = proj.LastIndexOf("\n", first)
+                    let tab = proj.Substring(line + 1, first - line - 1)
+                    let newProj = proj.Insert(first, compile + "\n" + tab)
+                    File.WriteAllText(fsproj, newProj)

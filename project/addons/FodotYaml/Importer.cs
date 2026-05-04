@@ -57,9 +57,7 @@ public partial class Importer : EditorImportPlugin
         }
         
         var root = ProjectSettings.GlobalizePath("res://project.godot").GetBaseDir();
-        var dir = Directory.GetParent(root)?.FullName;
-        var binding = $@"{dir}\Fodot.Bind\Bind.fs";
-        Fodot.Generator.Parser.createFsBinding(root, binding);
+        Fodot.Generator.Parser.createFsBinding(root);
             
         ResourceSaver.Save(script, final);
 
