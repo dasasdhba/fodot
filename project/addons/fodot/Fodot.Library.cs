@@ -11,8 +11,8 @@ public partial class FodotMain
 #if TOOLS
     
     private Array<string> _cachedUnlib = [];
-    private Godot.Collections.Dictionary<string, Resource> _cachedLib =[];
-    private Godot.Collections.Dictionary<string, string> _cachedMd5 = [];
+    private Collections.Dictionary<string, Resource> _cachedLib =[];
+    private Collections.Dictionary<string, string> _cachedMd5 = [];
 
     private static void LibPrint(string str)
     {
@@ -69,12 +69,23 @@ public partial class FodotMain
         if (!updated) return;
         
         var total = new System.Collections.Generic.Dictionary<string, List<Resource>>();
+        var cachedParent = new System.Collections.Generic.Dictionary<string, string>();
+        
         foreach (var k in _cachedLib.Keys)
         {
             var res = _cachedLib[k];
             var globalPath = ProjectSettings.GlobalizePath(k);
-            var globalDir = Path.GetDirectoryName(globalPath);
-            var parent = Parser.findParentFsproj(globalDir);
+            var globalDir = Path.GetDirectoryName(globalPath) ?? "null";
+            string parent;
+            if (cachedParent.TryGetValue(globalDir, out var p))
+            {
+                parent = p;
+            }
+            else
+            {
+                parent = Parser.findParentFsproj(globalDir);
+                cachedParent.Add(globalDir, parent);
+            }
             if (!total.TryGetValue(parent, out var l))
             {
                 total.Add(parent, [res]);
