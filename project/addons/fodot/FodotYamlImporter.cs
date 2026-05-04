@@ -1,11 +1,10 @@
-using System.IO;
 using Godot;
 using Godot.Collections;
 
-namespace GodotCSharp.FodotYaml;
+namespace GodotCSharp;
 
 [Tool]
-public partial class Importer : EditorImportPlugin
+public partial class FodotYamlImporter : EditorImportPlugin
 {
 #if TOOLS && DEBUG
 

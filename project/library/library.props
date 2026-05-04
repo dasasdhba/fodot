@@ -1,7 +1,0 @@
-<Project>
-	<ItemGroup>
-		<Compile Include="..\project\library\Cutscene.fs">
-			<Link>Cutscene.fs</Link>
-		</Compile>
-	</ItemGroup>
-</Project>

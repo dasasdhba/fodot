@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net10.0</TargetFramework>
@@ -7,14 +7,14 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="Library.fs" />
         <Compile Include="Cutscene.fs" />
         <Compile Include="Stage.fs" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Fodot.Async\Fodot.Async.fsproj" />
-        <ProjectReference Include="..\Fodot.Library\Fodot.Library.fsproj" />
-        <ProjectReference Include="..\Fodot.Module\Fodot.Module.fsproj" />
+        <ProjectReference Include="..\..\..\Fodot.Async\Fodot.Async.fsproj" />
+        <ProjectReference Include="..\..\..\\Fodot.Module\Fodot.Module.fsproj" />
     </ItemGroup>
 
 </Project>

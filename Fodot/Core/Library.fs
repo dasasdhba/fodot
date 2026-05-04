@@ -1,6 +1,5 @@
-﻿namespace Fodot.Library
+﻿namespace Fodot.Core
 
-open Fodot.Core
 open Godot
 
 type GDLib(path : string) =

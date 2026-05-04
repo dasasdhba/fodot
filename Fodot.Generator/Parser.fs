@@ -327,8 +327,11 @@ let createFsString (file : string) =
     let yaml = builder.Deserialize<YamlRoot>(content)
     let name = Path.GetFileNameWithoutExtension(file) |> toPascalCase
     yaml.AsFs name
-    
+
+// create fs binding
+
 let rec findParentFsproj (dir: string) =
+    let dir = Path.GetFullPath(dir)
     let files = Directory.GetFiles(dir)
     match files with
     
@@ -343,6 +346,7 @@ let rec findParentFsproj (dir: string) =
             findParentFsproj (Directory.GetParent(dir).FullName)
     
 let rec getYamlFiles (dir: string) : Dictionary<string, string list>  =
+    let dir = Path.GetFullPath(dir)
     let files = Directory.GetFiles(dir, "*.yaml")
     let dict = Dictionary<string, string list>()
     if files.Length > 0 then
@@ -361,6 +365,16 @@ let rec getYamlFiles (dir: string) : Dictionary<string, string list>  =
         acc
     ) dict
     
+let addCompileItem file fsproj =
+    let proj = File.ReadAllText fsproj
+    let compile = $"<Compile Include=\"{file}.fs\" />"
+    if proj.Contains compile |> not then
+        let first = proj.IndexOf "<Compile Include="
+        let line = proj.LastIndexOf("\n", first)
+        let tab = proj.Substring(line + 1, first - line - 1)
+        let newProj = proj.Insert(first, compile + "\n" + tab)
+        File.WriteAllText(fsproj, newProj)
+    
 let createFsBinding (inputDir : string)=
     if not (Directory.Exists(inputDir)) then
         printfn $"Input directory does not exist: {inputDir}"
@@ -376,7 +390,7 @@ let createFsBinding (inputDir : string)=
                     files
                     |> List.map Path.GetFileNameWithoutExtension
                     |> String.concat ", "
-                printfn $"Cannot find parent fsproj for {all}.\n Binding will not be created."
+                printfn $"Cannot find parent fsproj for {all}.\nBinding will not be created."
             | fsproj ->
                 let codes = 
                     files 
@@ -391,13 +405,5 @@ let createFsBinding (inputDir : string)=
                 
                 let file = Path.GetDirectoryName(fsproj) + "/Bind.fs"
                 File.WriteAllText(file, fullCode)
+                addCompileItem "Bind" fsproj
                 printfn $"Generated {files.Length} binding types for {name}"
-                
-                let proj = File.ReadAllText fsproj
-                let compile = "<Compile Include=\"Bind.fs\" />"
-                if proj.Contains compile |> not then
-                    let first = proj.IndexOf "<Compile Include="
-                    let line = proj.LastIndexOf("\n", first)
-                    let tab = proj.Substring(line + 1, first - line - 1)
-                    let newProj = proj.Insert(first, compile + "\n" + tab)
-                    File.WriteAllText(fsproj, newProj)

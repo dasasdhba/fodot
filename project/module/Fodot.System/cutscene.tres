@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="Library" format=3 uid="uid://by2q4qqhevgok"]
+
+[ext_resource type="Script" uid="uid://cgxn62mahi576" path="res://addons/Fodot/library.gd" id="1_o3a7g"]
+
+[sub_resource type="Resource" id="Resource_o3a7g"]
+
+[sub_resource type="Resource" id="Resource_k0syc"]
+
+[resource]
+script = ExtResource("1_o3a7g")
+lib = Dictionary[String, Resource]({
+"block": SubResource("Resource_k0syc"),
+"color": SubResource("Resource_o3a7g")
+})
+metadata/_custom_type_script = "uid://cgxn62mahi576"
+metadata/_fs_yaml_parent = "F:\\Windows\\!Project\\Godot\\Project\\godot-fsharp\\project\\module\\Fodot.System\\Fodot.System.fsproj"

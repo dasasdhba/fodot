@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Reflection;
 using Godot;
@@ -11,13 +10,9 @@ public partial class Bridge : Node
     {
         base._EnterTree();
         
-        var asm = 
-            ProjectSettings.GetSetting("fodot/general/assemblies", "")
-                .AsString()
-                .Split(["\n", "\r", "\r\n"], StringSplitOptions.RemoveEmptyEntries)
-                .ToHashSet();
-        
+        var asm = FodotMain.ProjectAssemblies;
         asm.Add("Fodot");
+        
         var loaded = asm.Select(s => Assembly.Load(s.Trim())).ToArray();
         
         Fodot.Core.FScript.setAssemblies(loaded);
