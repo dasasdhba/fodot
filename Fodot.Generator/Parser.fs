@@ -53,6 +53,8 @@ type YamlRoot = {
 let private mapTypeFs = function
     | "int" -> "int64"
     | "String" -> "string"
+    | "Array" -> "Collections.Array"
+    | "Dictionary" -> "Collections.Dictionary"
     | s -> s
 
 let private mapTypeGd = function
@@ -89,8 +91,8 @@ type PropType =
         let mapper = mapTypeFs
         match this with
         | Raw t -> mapper t
-        | TypedArray t -> $"Array<{mapper t}>"
-        | TypedDictionary (k, v) -> $"Dictionary<{mapper k}, {mapper v}>"
+        | TypedArray t -> $"Collections.Array<{mapper t}>"
+        | TypedDictionary (k, v) -> $"Collections.Dictionary<{mapper k}, {mapper v}>"
     
     member this.GetTextFsType () =
         let mapper = mapTypeFs
@@ -328,8 +330,6 @@ let createFsString (file : string) =
     let name = Path.GetFileNameWithoutExtension(file) |> toPascalCase
     yaml.AsFs name
 
-// create fs binding
-
 let rec findParentFsproj (dir: string) =
     let dir = Path.GetFullPath(dir)
     let files = Directory.GetFiles(dir)
@@ -344,6 +344,27 @@ let rec findParentFsproj (dir: string) =
         | Some f -> f
         | None ->
             findParentFsproj (Directory.GetParent(dir).FullName)
+    
+let addCompileItem file fsproj =
+    let proj = File.ReadAllText fsproj
+    let compile = $"<Compile Include=\"{file}.fs\" />"
+    if proj.Contains compile |> not then
+        let first = proj.IndexOf "<Compile Include="
+        let line = proj.LastIndexOf("\n", first)
+        let tab = proj.Substring(line + 1, first - line - 1)
+        let newProj = proj.Insert(first, compile + "\n" + tab)
+        File.WriteAllText(fsproj, newProj)
+
+let removeCompileItem file fsproj =
+    let proj = File.ReadAllText fsproj
+    let compile = $"<Compile Include=\"{file}.fs\" />"
+    if proj.Contains compile then
+        let first = proj.IndexOf compile
+        let line = proj.LastIndexOf ("\n", first)
+        let newProj = proj.Remove(line, first - line + compile.Length)
+        File.WriteAllText(fsproj, newProj)
+
+// cli
     
 let rec getYamlFiles (dir: string) : Dictionary<string, string list>  =
     let dir = Path.GetFullPath(dir)
@@ -364,16 +385,6 @@ let rec getYamlFiles (dir: string) : Dictionary<string, string list>  =
                 acc[k] <- m[k]
         acc
     ) dict
-    
-let addCompileItem file fsproj =
-    let proj = File.ReadAllText fsproj
-    let compile = $"<Compile Include=\"{file}.fs\" />"
-    if proj.Contains compile |> not then
-        let first = proj.IndexOf "<Compile Include="
-        let line = proj.LastIndexOf("\n", first)
-        let tab = proj.Substring(line + 1, first - line - 1)
-        let newProj = proj.Insert(first, compile + "\n" + tab)
-        File.WriteAllText(fsproj, newProj)
     
 let createFsBinding (inputDir : string)=
     if not (Directory.Exists(inputDir)) then

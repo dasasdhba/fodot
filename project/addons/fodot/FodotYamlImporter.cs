@@ -53,9 +53,6 @@ public partial class FodotYamlImporter : EditorImportPlugin
             GD.PrintErr($"YAML import failed: ({err})");
             return err;
         }
-        
-        var root = ProjectSettings.GlobalizePath("res://project.godot").GetBaseDir();
-        Fodot.Generator.Parser.createFsBinding(root);
             
         ResourceSaver.Save(script, final);
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,10 +11,12 @@ namespace Godot;
 
 public partial class FodotMain
 {
-    
+
     private Array<string> _cachedUnlib = [];
-    private Collections.Dictionary<string, Resource> _cachedLib =[];
-    private Collections.Dictionary<string, string> _cachedMd5 = [];
+    private Collections.Dictionary<string, Resource> _cachedLib = [];
+    private Collections.Dictionary<string, string> _cachedLibMd5 = [];
+    private Collections.Dictionary<string, string> _cachedYaml = [];
+    private Collections.Dictionary<string, string> _cachedParents = [];
 
     private static void LibPrint(string str)
     {
@@ -23,19 +26,23 @@ public partial class FodotMain
     private void LoadLibrary(string path)
     {
         var dir = DirAccess.Open(path);
-        foreach (var f in dir.GetFiles()
-            .Select(u => path + "/" + u)
-            .Where(u => u.GetExtension() == "tres" 
-                && !_cachedLib.ContainsKey(u) && !_cachedUnlib.Contains(u) ))
+        foreach (var f in dir.GetFiles().Select(u => path + "/" + u))
         {
-            var res = GD.Load(f);
-            if (res.HasMethod("get_fs_content"))
+            if (f.GetExtension() == "yaml")
             {
-                _cachedLib.Add(f, res);
+                _cachedYaml.TryAdd(f, "");
             }
-            else
+            else if (f.GetExtension() == "tres" && !_cachedLib.ContainsKey(f) && !_cachedUnlib.Contains(f))
             {
-                _cachedUnlib.Add(f);
+                var res = GD.Load(f);
+                if (res.HasMethod("get_fs_content"))
+                {
+                    _cachedLib.Add(f, res);
+                }
+                else
+                {
+                    _cachedUnlib.Add(f);
+                }
             }
         }
 
@@ -44,86 +51,122 @@ public partial class FodotMain
             LoadLibrary(path + "/" + d);
         }
     }
-
-    private void UpdateLibrary()
-    {
-        var updated = false;
     
-        foreach (var k in _cachedLib.Keys)
+    private HashSet<string> GetPendingParents<T>(IDictionary<string, T> res, IDictionary<string, string> md5)
+    {
+        HashSet<string> result = [];
+        
+        foreach (var k in res.Keys)
         {
+            var parent = _cachedParents.GetValueOrDefault(k, "null");
+            
             if (!FileAccess.FileExists(k))
             {
-                _cachedLib.Remove(k);
-                _cachedMd5.Remove(k);
-                updated = true;
+                res.Remove(k);
+                md5.Remove(k);
+                _cachedParents.Remove(k);
+                result.Add(parent);
                 continue;
             }
             
             var md = FileAccess.GetMd5(k);
-            if (_cachedMd5.GetValueOrDefault(k, "") != md)
+            if (!md5.TryGetValue(k, out string value) || md != value || !FileAccess.FileExists(parent))
             {
-                _cachedMd5[k] = md;
-                updated = true;
+                md5[k] = md;
+                var path = ProjectSettings.GlobalizePath(k);
+                var dir = Path.GetDirectoryName(path);
+                var globalParent = Parser.findParentFsproj(dir);
+                var newParent = globalParent == "null" ? "null" : 
+                    ProjectSettings.LocalizePath(globalParent);
+                _cachedParents[k] = newParent;
+                result.Add(parent);
+                result.Add(newParent);
             }
         }
         
-        if (!updated) return;
-        
-        var total = new System.Collections.Generic.Dictionary<string, List<Resource>>();
-        var cachedParent = new System.Collections.Generic.Dictionary<string, string>();
-        
-        foreach (var k in _cachedLib.Keys)
-        {
-            var res = _cachedLib[k];
-            var globalPath = ProjectSettings.GlobalizePath(k);
-            var globalDir = Path.GetDirectoryName(globalPath) ?? "null";
-            string parent;
-            if (cachedParent.TryGetValue(globalDir, out var p))
-            {
-                parent = p;
-            }
-            else
-            {
-                parent = Parser.findParentFsproj(globalDir);
-                cachedParent.Add(globalDir, parent);
-            }
-            if (!total.TryGetValue(parent, out var l))
-            {
-                total.Add(parent, [res]);
-            }
-            else
-            {
-                l.Add(res);
-            }
-        }
+        return result;
+    }
 
-        foreach (var p in total.Keys)
+    private record struct UpdateData<T>
+    {
+        public IDictionary<string, T> ResDict { get; init; }
+        public IDictionary<string, string> Md5Dict { get; init; }
+        public Func<string, string> CodeGenerator { get; init; }
+        public string CodeFileName { get; init; }
+        public string ConsoleHintAdd { get; init; }
+        public string ConsoleHintRemove { get; init; }
+    }
+    
+    private void UpdateWith<T>(UpdateData<T> data)
+    {
+        var parents = GetPendingParents(data.ResDict, data.Md5Dict);
+        
+        foreach (var p in parents.Where(FileAccess.FileExists))
         {
-            var files = total[p];
-            if (p == "null")
+            var files = data.ResDict.Keys
+                .Where(k => _cachedParents.GetValueOrDefault(k, "null") == p)
+                .ToArray();
+            
+            var path = ProjectSettings.GlobalizePath(p);
+            var name = Path.GetFileNameWithoutExtension(path);
+            var file = Path.GetDirectoryName(path) + $"/{data.CodeFileName}.fs";
+            
+            if (files.Length == 0)
             {
-                var content = string.Join(", ", files);
-                LibPrint($"Cannot find parent fsproj for {content}.\nLibrary will not be created.");
-                continue;
+                File.Delete(file);
+                Parser.removeCompileItem(data.CodeFileName, path);
+                LibPrint(string.Format(data.ConsoleHintRemove, name));
             }
-            
-            var codes = files
-                .Select(r => r.Call("get_fs_content").AsString());
-            var text = string.Join("\n\n", codes);
-            
-            var name = Path.GetFileNameWithoutExtension(p);
-            var fullCode = 
-                $"namespace {name}.Library\n\n" +
-                "open Fodot.Core\n" +
-                "open Godot\n" +
-                "open Godot.Collections\n\n" +
-                text;
+            else
+            {
+                var codes = files.Select(data.CodeGenerator);
+                var text = string.Join("\n\n", codes);
                 
-            var file = Path.GetDirectoryName(p) + "/Library.fs";
-            File.WriteAllText(file, fullCode);
-            Parser.addCompileItem("Library", p);
-            LibPrint($"Generated {files.Count} library module for {name}");
+                var fullCode = 
+                    $"namespace {name}.{data.CodeFileName}\n\n" +
+                    "open Fodot.Core\n" +
+                    "open Godot\n\n" +
+                    text;
+            
+                File.WriteAllText(file, fullCode);
+                Parser.addCompileItem(data.CodeFileName, path);
+                LibPrint(string.Format(data.ConsoleHintAdd, files.Length, name));
+            }
         }
+    }
+
+    private void UpdateYaml()
+    {
+        var info = new UpdateData<string>
+        {
+            ResDict = _cachedYaml,
+            Md5Dict = _cachedYaml,
+            CodeGenerator = k =>
+            {
+                var p = ProjectSettings.GlobalizePath(k);
+                return Parser.createFsString(p);
+            },
+            CodeFileName = "Bind",
+            ConsoleHintAdd = "Generated {0} binding type for {1}",
+            ConsoleHintRemove = "Removed Bind.fs for {0}"
+        };
+    
+        UpdateWith(info);
+    }
+
+    private void UpdateLibrary()
+    {
+        var info = new UpdateData<Resource>
+        {
+            ResDict = _cachedLib,
+            Md5Dict = _cachedLibMd5,
+            CodeGenerator = k => _cachedLib[k].Call("get_fs_content").AsString(),
+            CodeFileName = "Library",
+            ConsoleHintAdd = "Generated {0} library module for {1}",
+            ConsoleHintRemove = "Removed Library.fs for {0}"
+        };
+    
+        UpdateWith(info);
     }
     
     private bool _shouldLoadLib = true;
@@ -150,7 +193,9 @@ public partial class FodotMain
                 LoadLibrary("res://"); 
             }
             
+            UpdateYaml();
             UpdateLibrary();
+            
             _onUpdateLib.Wait();
         }
     }
@@ -165,9 +210,16 @@ public partial class FodotMain
         var cfg = new ConfigFile();
         if (cfg.Load(CacheCfg) == Error.Ok)
         {
-            _cachedLib = cfg.GetValue("cache", "lib").AsGodotDictionary<string, Resource>();
-            _cachedMd5 = cfg.GetValue("cache", "md5").AsGodotDictionary<string, string>();
-            _cachedUnlib = cfg.GetValue("cache", "unlib").AsGodotArray<string>();
+            _cachedUnlib = cfg.GetValue("cache", "unlib", new Array<string>())
+                .AsGodotArray<string>();
+            _cachedLib = cfg.GetValue("cache", "lib", new Collections.Dictionary<string, Resource>())
+                .AsGodotDictionary<string, Resource>();
+            _cachedLibMd5 = cfg.GetValue("cache", "lib_md5", new Collections.Dictionary<string, string>())
+                .AsGodotDictionary<string, string>();
+            _cachedYaml = cfg.GetValue("cache", "yaml", new Collections.Dictionary<string, string>())
+                .AsGodotDictionary<string, string>();
+            _cachedParents = cfg.GetValue("cache", "parents", new Collections.Dictionary<string, string>())
+                .AsGodotDictionary<string, string>();
         }
         
         _shouldKillThread = false;
@@ -184,9 +236,11 @@ public partial class FodotMain
         NotifyUpdateLibrary();
         _libThread.WaitToFinish();
         var cfg = new ConfigFile();
-        cfg.SetValue("cache", "lib", _cachedLib);
-        cfg.SetValue("cache", "md5", _cachedMd5);
         cfg.SetValue("cache", "unlib", _cachedUnlib);
+        cfg.SetValue("cache", "lib", _cachedLib);
+        cfg.SetValue("cache", "lib_md5", _cachedLibMd5);
+        cfg.SetValue("cache", "yaml", _cachedYaml);
+        cfg.SetValue("cache", "parents", _cachedParents);
         cfg.Save(CacheCfg);
     }
     

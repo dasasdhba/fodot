@@ -66,9 +66,9 @@ static func get_type_name(t):
 		TYPE_SIGNAL:
 			return "Signal"
 		TYPE_DICTIONARY:
-			return "Dictionary"
+			return "Collections.Dictionary"
 		TYPE_ARRAY:
-			return "Array"
+			return "Collections.Array"
 		TYPE_PACKED_BYTE_ARRAY:
 			return "byte[]"
 		TYPE_PACKED_INT32_ARRAY:

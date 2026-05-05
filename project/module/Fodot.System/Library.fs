@@ -2,7 +2,6 @@ namespace Fodot.System.Library
 
 open Fodot.Core
 open Godot
-open Godot.Collections
 
 // res://module/Fodot.System/cutscene.tres
 module Cutscene =
