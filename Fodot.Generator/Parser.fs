@@ -41,6 +41,9 @@ type YamlRoot = {
     [<YamlMember(Alias = "extends")>]
     Extends : string
     
+    [<YamlMember(Alias = "class_name")>]
+    ClassName : string
+    
     [<YamlMember(Alias = "property")>]
     Property : Dictionary<string, YamlProperty>
     
@@ -244,6 +247,7 @@ let signalToGd (name : string) (yaml : YamlSignalArg list) =
 type YamlRoot with
     member this.AsGd () =
         let extends = $"extends {this.Extends}"
+        let className = if this.ClassName = null then "" else $"class_name {this.ClassName}"
         
         let exports =
             this.Property.Keys
@@ -266,7 +270,7 @@ type YamlRoot with
             )
             |> String.concat "\n"
             
-        $"{extends}\n\n{exports}\n\n{signals}"
+        $"{extends}\n{className}\n\n{exports}\n\n{signals}"
     
     member this.AsFs fileName =
         let typ = $"type {toPascalCase fileName}(obj : {this.Extends}) ="
