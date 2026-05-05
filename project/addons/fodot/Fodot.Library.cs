@@ -169,6 +169,9 @@ public partial class FodotMain
             _cachedMd5 = cfg.GetValue("cache", "md5").AsGodotDictionary<string, string>();
             _cachedUnlib = cfg.GetValue("cache", "unlib").AsGodotArray<string>();
         }
+        
+        _shouldKillThread = false;
+        _shouldLoadLib = true;
         _libThread = new();
         _libThread.Start(Callable.From(UpdateLibOnThread));
     }
