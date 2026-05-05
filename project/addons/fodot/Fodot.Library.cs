@@ -6,9 +6,10 @@ using Godot.Collections;
 
 namespace Godot;
 
+#if TOOLS
+
 public partial class FodotMain
 {
-#if TOOLS
     
     private Array<string> _cachedUnlib = [];
     private Collections.Dictionary<string, Resource> _cachedLib =[];
@@ -114,7 +115,8 @@ public partial class FodotMain
             var fullCode = 
                 $"namespace {name}.Library\n\n" +
                 "open Fodot.Core\n" +
-                "open Godot\n\n" +
+                "open Godot\n" +
+                "open Godot.Collections\n\n" +
                 text;
                 
             var file = Path.GetDirectoryName(p) + "/Library.fs";
@@ -199,6 +201,7 @@ public partial class FodotMain
             NotifyUpdateLibrary();
         }
     }
-
-#endif        
+    
 }
+
+#endif

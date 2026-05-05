@@ -4,12 +4,9 @@
 
 [sub_resource type="Resource" id="Resource_o3a7g"]
 
-[sub_resource type="Resource" id="Resource_k0syc"]
-
 [resource]
 script = ExtResource("1_o3a7g")
-lib = Dictionary[String, Resource]({
-"block": SubResource("Resource_k0syc"),
+lib = Dictionary[String, Variant]({
 "color": SubResource("Resource_o3a7g")
 })
 metadata/_custom_type_script = "uid://cgxn62mahi576"

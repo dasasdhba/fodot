@@ -28,10 +28,6 @@ project/solution_directory="../"
 
 enabled=PackedStringArray("res://addons/Fodot/plugin.cfg")
 
-[fodot]
-
-general/assemblies="Fodot.Test"
-
 [physics]
 
 3d/physics_engine="Jolt Physics"

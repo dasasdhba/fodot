@@ -2,9 +2,10 @@ using Godot.Common;
 
 namespace Godot;
 
+#if TOOLS
+
 public partial class FodotMain
 {
-#if TOOLS
 
     private static string DebugScenePath => FodotEditor.DebugScenePath;
     private string _lastPath = "";
@@ -23,5 +24,6 @@ public partial class FodotMain
         f.Close();
     }
     
-#endif    
 }
+
+#endif    

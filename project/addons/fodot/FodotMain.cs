@@ -6,7 +6,11 @@ using Godot.Common;
 namespace Godot;
 
 [Tool]
+#if TOOLS
+public partial class FodotMain : EditorPlugin, ISerializationListener
+#else
 public partial class FodotMain : EditorPlugin
+#endif
 {
     private const string AssemblyKey = "fodot/general/assemblies";
     
@@ -26,7 +30,7 @@ public partial class FodotMain : EditorPlugin
     
     private FodotYamlImporter _importer;
     
-    public override void _EnterTree()
+    public void OnAfterDeserialize()
     {
         Plugin.AddProjectSetting(MainSceneKey, "", Variant.Type.String, 
             PropertyHint.File, "*.tscn,*.scn,*.res");
@@ -40,12 +44,22 @@ public partial class FodotMain : EditorPlugin
         
         LibInit();
     }
-
-    public override void _ExitTree()
+    
+    public void OnBeforeSerialize()
     {
         RemoveImportPlugin(_importer);
         
         LibExit();
+    }
+
+    public override void _EnterTree()
+    {
+        OnAfterDeserialize();
+    }
+
+    public override void _ExitTree()
+    {
+        OnBeforeSerialize();
     }
 
     public override void _EnablePlugin()

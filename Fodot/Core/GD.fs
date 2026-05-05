@@ -131,20 +131,20 @@ type GDSignal<'a> =
             SignalName = signal
         }
     
-    member this.AddWithFlag (call : 'a -> unit) (flags : GodotObject.ConnectFlags) =
+    member this.ConnectWithFlag (call : 'a -> unit) (flags : GodotObject.ConnectFlags) =
         this.Object.Connect(
             this.signalName,
             Callable.from call,
             uint32 flags
         )
         
-    member this.Add (call : 'a -> unit) =
+    member this.Connect (call : 'a -> unit) =
         this.Object.Connect(
             this.signalName,
             Callable.from call
         )
         
-    member this.Remove (call : 'a -> unit)=
+    member this.Disconnect (call : 'a -> unit)=
         this.Object.Disconnect(
             this.signalName,
             Callable.from call
@@ -152,7 +152,25 @@ type GDSignal<'a> =
         
     member this.Emit (args : 'a) =
         this.Object.EmitSignal(this.signalName, args |> Variant.fromTuple)
-    
+        
+    interface IEvent<'a> with
+        member this.AddHandler handler =
+            this.Connect (fun a -> handler.Invoke(null, a)) |> ignore
+        
+        member this.RemoveHandler handler =
+            this.Disconnect (fun a -> handler.Invoke(null, a))
+        
+        member this.Subscribe observer =
+            let handler = observer.OnNext
+            let disconnect = this.Disconnect
+            this.Connect handler |> ignore
+            
+            {
+                new IDisposable with
+                member this.Dispose() =
+                    disconnect handler
+            }
+        
 module GD =
     let private loadLock = obj()
     
