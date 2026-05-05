@@ -28,7 +28,7 @@ public partial class FodotMain
         var dir = DirAccess.Open(path);
         foreach (var f in dir.GetFiles().Select(u => path + "/" + u))
         {
-            if (f.EndsWith(".gdyaml"))
+            if (f.EndsWith(".gd.yaml"))
             {
                 _cachedYaml.TryAdd(f, "");
             }
@@ -119,7 +119,8 @@ public partial class FodotMain
             }
             else
             {
-                var codes = files.Select(data.CodeGenerator);
+                var codes = files.Select(data.CodeGenerator)
+                    .Where(c => c != "").ToArray();
                 var text = string.Join("\n\n", codes);
                 
                 var fullCode = 
@@ -130,7 +131,7 @@ public partial class FodotMain
             
                 File.WriteAllText(file, fullCode);
                 Parser.addCompileItem(data.CodeFileName, path);
-                LibPrint(string.Format(data.ConsoleHintAdd, files.Length, name));
+                LibPrint(string.Format(data.ConsoleHintAdd, codes.Length, name));
             }
         }
     }
@@ -149,7 +150,7 @@ public partial class FodotMain
                 {
                     var p = ProjectSettings.GlobalizePath(k);
                     var gd = Parser.createGdString(p);
-                    var gdFile = Path.GetFileNameWithoutExtension(p) + ".gd";
+                    var gdFile = Path.GetFileNameWithoutExtension(p);
                     var dir = Path.GetDirectoryName(p);
                     File.WriteAllText(dir + "/" + gdFile, gd);
                     scan = true;
@@ -157,6 +158,7 @@ public partial class FodotMain
                 }
                 catch
                 {
+                    GD.PushWarning($"[Library] Failed parsing {k}, any format errors?");
                     return "";
                 }
             },

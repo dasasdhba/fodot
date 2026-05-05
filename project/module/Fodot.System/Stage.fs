@@ -38,7 +38,7 @@ module Stage =
                let ext = current.GetExtension ()
                
                let idx = name.LastIndexOf '_'
-               let name = if idx < 0 then name else name[..idx]
+               let name = if idx < 0 then name else name[..(idx - 1)]
                
                dir + "/" + name + "_" + body + ext
           

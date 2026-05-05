@@ -347,8 +347,14 @@ let createGdString (file : string) =
 let createFsString (file : string) =
     let content = File.ReadAllText(file)
     let yaml = builder.Deserialize<YamlRoot>(content)
-    let name = Path.GetFileNameWithoutExtension(file) |> toPascalCase
-    yaml.AsFs name
+    let name =
+        let name = Path.GetFileNameWithoutExtension(file)
+        let dot = name.IndexOf "."
+        if dot > 0 then
+            name[..(dot - 1)]
+        else
+            name
+    yaml.AsFs (name |> toPascalCase)
 
 let rec findParentFsproj (dir: string) =
     let dir = Path.GetFullPath(dir)
