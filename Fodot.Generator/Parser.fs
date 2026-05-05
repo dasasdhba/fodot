@@ -38,6 +38,9 @@ type YamlSignalArg = {
 [<CLIMutable>]
 type YamlRoot = {
     
+    [<YamlMember(Alias = "fscript")>]
+    FScript : string list
+    
     [<YamlMember(Alias = "extends")>]
     Extends : string
     
@@ -270,7 +273,19 @@ type YamlRoot with
             )
             |> String.concat "\n"
             
-        $"{extends}\n{className}\n\n{exports}\n\n{signals}"
+        let fs =
+            if this.FScript.Length = 0 then
+                ""
+            else
+                let l =
+                    this.FScript
+                    
+                    |> List.map (fun l -> $"\"{l}\"")
+                    |> String.concat ", "
+                
+                $"func _get_fscripts():\n\treturn [{l}]"
+            
+        $"{extends}\n{className}\n\n{exports}\n\n{signals}\n\n{fs}"
     
     member this.AsFs fileName =
         let typ = $"type {toPascalCase fileName}(obj : {this.Extends}) ="
