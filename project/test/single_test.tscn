@@ -1,11 +1,13 @@
 [gd_scene format=3 uid="uid://daa8j8uxlij7k"]
 
 [ext_resource type="Texture2D" uid="uid://corswjt8xmnko" path="res://icon.svg" id="1_ri0sw"]
+[ext_resource type="Script" uid="uid://bteo4073f0oos" path="res://module/Fodot.System/example.gd" id="1_seisv"]
 [ext_resource type="Script" uid="uid://d4anhtr8su4bn" path="res://test/test_script.gd" id="2_lmdpm"]
 [ext_resource type="Resource" uid="uid://c38nb53weutc1" path="res://test/new_resource.tres" id="3_mafe7"]
 [ext_resource type="PackedScene" uid="uid://ovdevsj3sl8t" path="res://test/single_gd_test.tscn" id="4_kblmv"]
 
 [node name="SingleTest" type="Node" unique_id=2020488105]
+script = ExtResource("1_seisv")
 
 [node name="Icon" type="Sprite2D" parent="." unique_id=560232545]
 position = Vector2(64, 64)

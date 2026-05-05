@@ -250,6 +250,7 @@ let signalToGd (name : string) (yaml : YamlSignalArg list) =
 type YamlRoot with
     member this.AsGd () =
         let extends = $"extends {this.Extends}"
+        
         let className = if this.ClassName = null then "" else $"class_name {this.ClassName}"
         
         let exports =
@@ -274,7 +275,7 @@ type YamlRoot with
             |> String.concat "\n"
             
         let fs =
-            if this.FScript.Length = 0 then
+            if this.FScript :> obj = null || this.FScript.Length = 0 then
                 ""
             else
                 let l =

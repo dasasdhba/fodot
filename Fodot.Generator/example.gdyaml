@@ -1,4 +1,6 @@
 extends: Node
+#class_name : MyYamlClass
+fscript : [ "my_script" ]
 
 property:
 

@@ -28,7 +28,7 @@ public partial class FodotMain
         var dir = DirAccess.Open(path);
         foreach (var f in dir.GetFiles().Select(u => path + "/" + u))
         {
-            if (f.GetExtension() == "yaml")
+            if (f.EndsWith(".gdyaml"))
             {
                 _cachedYaml.TryAdd(f, "");
             }
@@ -137,14 +137,28 @@ public partial class FodotMain
 
     private void UpdateYaml()
     {
+        var scan = false;
+    
         var info = new UpdateData<string>
         {
             ResDict = _cachedYaml,
             Md5Dict = _cachedYaml,
             CodeGenerator = k =>
             {
-                var p = ProjectSettings.GlobalizePath(k);
-                return Parser.createFsString(p);
+                try
+                {
+                    var p = ProjectSettings.GlobalizePath(k);
+                    var gd = Parser.createGdString(p);
+                    var gdFile = Path.GetFileNameWithoutExtension(p) + ".gd";
+                    var dir = Path.GetDirectoryName(p);
+                    File.WriteAllText(dir + "/" + gdFile, gd);
+                    scan = true;
+                    return Parser.createFsString(p);
+                }
+                catch
+                {
+                    return "";
+                }
             },
             CodeFileName = "Bind",
             ConsoleHintAdd = "Generated {0} binding type for {1}",
@@ -152,6 +166,14 @@ public partial class FodotMain
         };
     
         UpdateWith(info);
+
+        if (scan)
+        {
+            Callable.From(() =>
+            {
+                EditorInterface.Singleton.GetResourceFilesystem().Scan();
+            }).CallDeferred();
+        }
     }
 
     private void UpdateLibrary()

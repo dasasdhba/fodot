@@ -28,8 +28,6 @@ public partial class FodotMain : EditorPlugin
 
     private static float LibraryScheduleTime => Plugin.GetProjectSetting(LibraryKey, 3.0f);
     
-    private FodotYamlImporter _importer;
-    
     public void OnAfterDeserialize()
     {
         Plugin.AddProjectSetting(MainSceneKey, "", Variant.Type.String, 
@@ -38,17 +36,12 @@ public partial class FodotMain : EditorPlugin
             PropertyHint.MultilineText);
         Plugin.AddProjectSetting(LibraryKey, 3.0, Variant.Type.Float,
             PropertyHint.Range, "0,60,0.5");
-            
-        _importer = new();
-        AddImportPlugin(_importer);
         
         LibInit();
     }
     
     public void OnBeforeSerialize()
     {
-        RemoveImportPlugin(_importer);
-        
         LibExit();
     }
 
