@@ -12,6 +12,9 @@ type YamlProperty = {
     [<YamlMember(Alias = "type")>]
     Type : string
     
+    [<YamlMember(Alias = "nullable")>]
+    Nullable : bool
+    
     [<YamlMember(Alias = "value")>]
     Value : string
     
@@ -109,16 +112,12 @@ type PropType =
 
 type PropertyData = {
     Type : PropType
+    Nullable : bool
     Value : string option
     Hint : string option
     HintString : string option
     Usage : string option
 }
-
-let private stringAsOption (s: string) =
-    match s with
-    | null -> None
-    | v -> Some v
 
 let private toPascalCase (s: string) =
     s.Split('_')
@@ -139,14 +138,15 @@ type ExportProperty =
     static member From (yaml : YamlProperty) =
         match yaml.Type with
         | "export_category" -> Category
-        | "export_group" -> Group (stringAsOption yaml.Value)
-        | "export_subgroup" -> Subgroup (stringAsOption yaml.Value)
+        | "export_group" -> Group (Option.ofObj yaml.Value)
+        | "export_subgroup" -> Subgroup (Option.ofObj yaml.Value)
         | _ -> Property {
             Type = PropType.From yaml.Type
-            Value = stringAsOption yaml.Value
-            Hint = stringAsOption yaml.Hint
-            HintString = stringAsOption yaml.HintString
-            Usage = stringAsOption yaml.Usage
+            Nullable = if yaml.Nullable :> obj = null then false else yaml.Nullable
+            Value = Option.ofObj yaml.Value
+            Hint = Option.ofObj yaml.Hint
+            HintString = Option.ofObj yaml.HintString
+            Usage = Option.ofObj yaml.Usage
         }
         
     member this.AsFsBack name =
@@ -155,7 +155,7 @@ type ExportProperty =
             let pack =
                 let fs = p.Type.GetTextFsType()
                 match p.Type with
-                | Raw _ -> $"GDProp<{fs}>"
+                | Raw _ -> if p.Nullable then $"GDNullProp<{fs}>" else $"GDProp<{fs}>"
                 | TypedArray _ -> $"GDPropArray<{fs}>"
                 | TypedDictionary _ -> $"GDPropDictionary<{fs}>"
             $"    let _back_prop_{name} = {pack}.From(\"{name}\") obj"
@@ -246,12 +246,37 @@ let signalToGd (name : string) (yaml : YamlSignalArg list) =
             $"({inner})"
     
     $"signal {name}{typ}"
+
+let private formatBlock (list : string list) =
+    list
+    |> List.filter (fun s -> s <> "")
+    |> List.map (fun s -> $"{s}\n")
+    |> String.concat "\n"
+
+type SafeRoot =
+    {
+        FScript : string list
+        Extends : string
+        ClassName : string option
+        Property : Dictionary<string, YamlProperty>
+        Signal : Dictionary<string, YamlSignalArg list>
+    }
     
-type YamlRoot with
+    static member From (yaml : YamlRoot) = {
+        FScript = if yaml.FScript :> obj = null then [] else yaml.FScript
+        Extends = yaml.Extends
+        ClassName = Option.ofObj yaml.ClassName
+        Property = if yaml.Property :> obj = null then Dictionary() else yaml.Property
+        Signal = if yaml.Signal :> obj = null then Dictionary() else yaml.Signal
+    }
+    
     member this.AsGd () =
         let extends = $"extends {this.Extends}"
         
-        let className = if this.ClassName = null then "" else $"class_name {this.ClassName}"
+        let className =
+            match this.ClassName with
+            | Some name -> $"class_name {name}"
+            | None -> ""
         
         let exports =
             this.Property.Keys
@@ -286,51 +311,55 @@ type YamlRoot with
                 
                 $"func _get_fscripts():\n\treturn [{l}]"
             
-        $"{extends}\n{className}\n\n{exports}\n\n{signals}\n\n{fs}"
+        [extends; className; exports; signals; fs] |> formatBlock
     
     member this.AsFs fileName =
         let typ = $"type {toPascalCase fileName}(obj : {this.Extends}) ="
         
-        let backProp =
+        let props =
             this.Property.Keys
-            
+
             |> List.ofSeq
+            |> List.filter (fun s -> s <> "")
             |> List.map (fun name ->
                 let prop = this.Property[name]
-                let prop = ExportProperty.From prop
-                prop.AsFsBack name
+                name, ExportProperty.From prop
             )
-            |> String.concat "\n"
-        
-        let backSignal =
+            
+        let signals =
             this.Signal.Keys
             
             |> List.ofSeq
+        
+        let backProp =
+            props
+            
+            |> List.map (fun (name, prop) -> prop.AsFsBack name)
+            |> String.concat "\n"
+        
+        let backSignal =
+            signals
+            
             |> List.map (fun name ->
                 let signal = this.Signal[name]
                 signalToFsBack name signal
             )
+            
             |> String.concat "\n"
         
         let memberProp =
-            this.Property.Keys
+            props
             
-            |> List.ofSeq
-            |> List.map (fun name ->
-                let prop = this.Property[name]
-                let prop = ExportProperty.From prop
-                prop.AsFsMember name
-            )
+            |> List.map (fun (name, prop) -> prop.AsFsMember name)
             |> String.concat "\n"
             
         let memberSignal =
-            this.Signal.Keys
+            signals
             
-            |> List.ofSeq
             |> List.map signalToFsMember
             |> String.concat "\n"
             
-        $"{typ}\n{backProp}\n\n{backSignal}\n\n{memberProp}\n\n{memberSignal}"
+        [typ; backProp; backSignal; memberProp; memberSignal] |> formatBlock
         
 // main builder
 
@@ -342,7 +371,7 @@ let builder =
 let createGdString (file : string) =
     let content = File.ReadAllText(file)
     let yaml = builder.Deserialize<YamlRoot>(content)
-    yaml.AsGd()
+    (yaml |> SafeRoot.From).AsGd()
     
 let createFsString (file : string) =
     let content = File.ReadAllText(file)
@@ -354,7 +383,7 @@ let createFsString (file : string) =
             name[..(dot - 1)]
         else
             name
-    yaml.AsFs (name |> toPascalCase)
+    (yaml |> SafeRoot.From).AsFs (name |> toPascalCase)
 
 let rec findParentFsproj (dir: string) =
     let dir = Path.GetFullPath(dir)

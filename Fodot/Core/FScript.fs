@@ -183,7 +183,9 @@ module FScript =
     }
     
     let get<'a> (obj: GodotObject) =
-        (obj |> tryGet<'a>).Value
+        obj
+        |> tryGet<'a>
+        |> Option.defaultWith (fun () -> failwith $"{obj} does not have {typeof<'a>} script.")
         
     let contains<'a> (obj: GodotObject) =
         obj |> tryGet<'a> |> Option.isSome
@@ -191,7 +193,10 @@ module FScript =
     let attach<'a> (obj : GodotObject) =
         let attr =
             typeof<'a>.GetCustomAttributes(typeof<FScriptAttribute>, false)
-            |> Array.head
+            |> Array.tryHead
+            |> Option.defaultWith (fun () ->
+                failwith $"{typeof<'a>} is not a FScript."
+            )
             :?> FScriptAttribute
         let name = attr.Name
         

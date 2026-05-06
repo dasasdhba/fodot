@@ -36,6 +36,18 @@ let moveChild (idx : int) (node : Node) =
     else
         node |> callDeferred "move_child" (node, idx)
 
+let reparent parent keep (node : Node) =
+    if parent |> isAccessSafe then
+        node.Reparent(parent, keep)
+    else
+        node |> callDeferred "reparent" (parent, keep)
+
+let reparentKeep parent (node : Node) =
+    node |> reparent parent true
+
+let reparentDirectly parent (node : Node) =
+    node |> reparent parent false
+
 // node get
 
 let getNode<'a when 'a: not struct and 'a :> Node> (name : string) (node : Node) =
@@ -45,7 +57,15 @@ let tryGetNode<'a when 'a: not struct and 'a : null and 'a :> Node> (name : stri
     match node.GetNodeOrNull<'a> name with
     | null -> None
     | node -> Some node
-    
+
+let getParent<'a when 'a: not struct and 'a :> Node> (node : Node) =
+    node.GetParent<'a>()
+
+let tryGetParent<'a when 'a: not struct and 'a : null and 'a :> Node> (node : Node) =
+    match node.GetParentOrNull<'a>() with
+    | null -> None
+    | node -> Some node
+
 let getChildInternal<'a when 'a: not struct and 'a :> Node> (idx : int) (node : Node) =
     node.GetChild<'a>(idx, true)
     

@@ -12,6 +12,7 @@
         <Compile Include="Transform2D.fs" />
         <Compile Include="CanvasItem.fs" />
         <Compile Include="Tween.fs" />
+        <Compile Include="Node.fs" />
     </ItemGroup>
 
     <ItemGroup>

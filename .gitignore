@@ -6,4 +6,4 @@ bin
 obj
 
 *.sln.DotSettings
-*.sln.DotSettings.User
+*.sln.DotSettings.user

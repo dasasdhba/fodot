@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://bru3uvevw006s"]
+
+[ext_resource type="PackedScene" uid="uid://dmyavudlxltwl" path="res://module/Fodot.Stage/stage.tscn" id="1_pch2m"]
+[ext_resource type="Script" uid="uid://b5we62n2l1grx" path="res://module/Fodot.Stage/cutscene_provider.gd" id="2_0j30n"]
+[ext_resource type="PackedScene" uid="uid://c4546y7d6pvhm" path="res://module/Fodot.Stage/cutscene/fade.tscn" id="3_iiym4"]
+
+[node name="GlobalStage" unique_id=849120772 groups=["fs_global_stage"] instance=ExtResource("1_pch2m")]
+
+[node name="Viewport" parent="SubViewportContainer" parent_id_path=PackedInt32Array(1785821906) index="0" unique_id=746523868]
+handle_input_locally = false
+render_target_update_mode = 4
+
+[node name="EntryCutscene" type="Node" parent="." index="2" unique_id=643099458]
+script = ExtResource("2_0j30n")
+in_scene = ExtResource("3_iiym4")

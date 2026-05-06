@@ -21,7 +21,27 @@ type GDProp<'a> =
             Object = obj
             PropName = prop
         }
-        
+
+/// A wrapper for GodotObject's property which allows null value.
+/// May fail if the property does not exist.
+type GDNullProp<'a when 'a : null> =
+    {
+        Object : GodotObject
+        PropName : string
+    }
+    
+    member this.Get () =
+        this.Object |> GodotObject.tryGetAs<'a> this.PropName
+    member this.Set (value : 'a option) =
+        match value with
+        | Some v -> this.Object |> GodotObject.set this.PropName v
+        | None -> this.Object |> GodotObject.set this.PropName null
+    static member From<'a> (prop : string) (obj : GodotObject) : GDNullProp<'a> =
+        {
+            Object = obj
+            PropName = prop
+        }
+
 /// A wrapper for GodotObject's array property.
 /// May fail if the property does not exist.
 type GDPropArray<'a> =
@@ -56,66 +76,6 @@ type GDPropDictionary<'a, 'b> =
         {
             Object = obj
             PropName = prop
-        }
-
-/// A wrapper for GodotObject's property.
-/// Will fall back to metadata if the property does not exist.
-type GDMeta<'a> =
-    {
-        Object : GodotObject
-        PropName : string
-        Default : Lazy<'a>
-    }
-    
-    member this.Get () =
-        this.Object |> GodotObject.getWithMetaAs this.PropName this.Default
-    member this.Set (value : 'a) =
-        this.Object |> GodotObject.setWithMeta this.PropName value
-    static member From<'a> (prop : string) (def : Lazy<'a>) (obj : GodotObject) : GDMeta<'a> =
-        {
-            Object = obj
-            PropName = prop
-            Default = def
-        }
-
-/// A wrapper for GodotObject's array property.
-/// Will fall back to metadata if the property does not exist.
-type GDMetaArray<'a> =
-    {
-        Object : GodotObject
-        PropName : string
-        Default : Lazy<Array<'a>>
-    }
-    
-    member this.Get () =
-        this.Object |> GodotObject.getWithMetaAsArray this.PropName this.Default
-    member this.Set (value : Array<'a>) =
-        this.Object |> GodotObject.setWithMeta this.PropName value
-    static member From<'a> (prop : string) (def : Lazy<Array<'a>>) (obj : GodotObject) : GDMetaArray<'a> =
-        {
-            Object = obj
-            PropName = prop
-            Default = def
-        }
-
-/// A wrapper for GodotObject's dictionary property.
-/// Will fall back to metadata if the property does not exist.
-type GDMetaDictionary<'a, 'b> =
-    {
-        Object : GodotObject
-        PropName : string
-        Default : Lazy<Dictionary<'a, 'b>>
-    }
-    
-    member this.Get () =
-        this.Object |> GodotObject.getWithMetaAsDictionary this.PropName this.Default
-    member this.Set (value : Array<'a>) =
-        this.Object |> GodotObject.setWithMeta this.PropName value
-    static member From<'a, 'b> (prop : string) (def : Lazy<Dictionary<'a, 'b>>) (obj : GodotObject) : GDMetaDictionary<'a, 'b> =
-        {
-            Object = obj
-            PropName = prop
-            Default = def
         }
 
 type GDSignal<'a> =

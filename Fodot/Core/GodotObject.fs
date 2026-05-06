@@ -115,39 +115,6 @@ let set (prop : string) (value : 'a) (obj : GodotObject) =
         failwith $"{obj}: Property {prop} not found."
     else
         obj.Set(prop, value |> Variant.from)
-
-let propGetSetMeta = "_fs_GodotObject_prop_get_set"
-
-let getFallbackMetaWith<'a>
-    (getter : string -> GodotObject -> 'a)
-    (getterSome : string -> GodotObject -> 'a option)
-    (getterDefault : string -> Lazy<'a> -> GodotObject -> 'a)
-    (prop : string) (def : Lazy<'a>) (obj : GodotObject) =
-    
-    let meta = $"{propGetSetMeta}_{prop}"
-    if obj |> hasMeta meta then
-        obj |> getter meta
-    else
-        match obj |> getterSome prop with
-        
-        | Some v -> v
-        | None -> getterDefault meta def obj
-
-let getWithMetaAs<'a> (prop : string) (def : Lazy<'a>) (obj : GodotObject) =
-    obj |> getFallbackMetaWith getMetaAs tryGetAs getMetaWithDefaultAs prop def
-    
-let getWithMetaAsArray<'a> (prop : string) (def : Lazy<Collections.Array<'a>>) (obj : GodotObject) =
-    obj |> getFallbackMetaWith getMetaAsArray tryGetAsArray getMetaWithDefaultAsArray prop def
-
-let getWithMetaAsDictionary<'a, 'b> (prop : string) (def : Lazy<Collections.Dictionary<'a, 'b>>) (obj : GodotObject) =
-    obj |> getFallbackMetaWith getMetaAsDictionary tryGetAsDictionary getMetaWithDefaultAsDictionary prop def
-        
-let setWithMeta (prop : string) (value : 'a) (obj : GodotObject) =
-    let meta = $"{propGetSetMeta}_{prop}"
-    if obj |> hasProperty prop then
-        obj |> set prop value
-    else
-        obj |> setMeta meta value
         
 // method
 

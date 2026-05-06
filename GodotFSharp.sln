@@ -14,7 +14,7 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fodot.Module", "Fodot.Modul
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fodot.Async", "Fodot.Async\Fodot.Async.fsproj", "{081A6FBD-66AA-4AF3-874A-E006E19AE18F}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fodot.System", "project\module\Fodot.System\Fodot.System.fsproj", "{A9105896-D3F9-4DDE-9B1C-1DF09EE80056}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Fodot.Stage", "project\module\Fodot.Stage\Fodot.Stage.fsproj", "{A9105896-D3F9-4DDE-9B1C-1DF09EE80056}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Godot.Common", "Godot.Common\Godot.Common.csproj", "{038DE26D-922A-4F08-B28B-43FAF2B5F889}"
 EndProject
