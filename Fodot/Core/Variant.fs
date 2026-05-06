@@ -15,14 +15,17 @@ let toArray<'a> (variant : Variant) =
     
 let toDictionary<'a, 'b> (variant : Variant) =
     variant.AsGodotDictionary<'a, 'b> ()
-    
+
 let private toSomeTypeWith converter (variant : Variant) =
     try
-        converter variant |> Some
+        match variant.VariantType with
+    
+        | Variant.Type.Nil -> None
+        | _ -> variant |> converter |> Some
     with
     
     | _ -> None
-    
+
 let toSome<'a> (variant : Variant) =
     variant |> toSomeTypeWith toType<'a>
     
