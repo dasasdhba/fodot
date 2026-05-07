@@ -1,6 +1,10 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+export_presets.cfg
 
 # Fodot
 fodot_debug_scene
+
+# tests
+tests/
