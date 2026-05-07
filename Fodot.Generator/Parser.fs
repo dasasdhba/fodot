@@ -320,7 +320,6 @@ type SafeRoot =
             this.Property.Keys
 
             |> List.ofSeq
-            |> List.filter (fun s -> s <> "")
             |> List.map (fun name ->
                 let prop = this.Property[name]
                 name, ExportProperty.From prop
@@ -335,6 +334,7 @@ type SafeRoot =
             props
             
             |> List.map (fun (name, prop) -> prop.AsFsBack name)
+            |> List.filter (fun s -> s <> "")
             |> String.concat "\n"
         
         let backSignal =
@@ -351,6 +351,7 @@ type SafeRoot =
             props
             
             |> List.map (fun (name, prop) -> prop.AsFsMember name)
+            |> List.filter (fun s -> s <> "")
             |> String.concat "\n"
             
         let memberSignal =
