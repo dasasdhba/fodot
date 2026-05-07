@@ -1,0 +1,30 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="ExportDebug" />
+    <BuildType Name="ExportRelease" />
+  </Configurations>
+  <Project Path="Fodot.Async/Fodot.Async.fsproj">
+    <BuildType Project="Debug" />
+  </Project>
+  <Project Path="Fodot.Generator/Fodot.Generator.fsproj">
+    <BuildType Project="Debug" />
+  </Project>
+  <Project Path="Fodot.Module/Fodot.Module.fsproj">
+    <BuildType Project="Debug" />
+  </Project>
+  <Project Path="Fodot.Test/Fodot.Test.fsproj">
+    <BuildType Project="Debug" />
+  </Project>
+  <Project Path="Fodot/Fodot.fsproj" />
+  <Project Path="Godot.Bridge/Godot.Bridge.csproj">
+    <BuildType Project="Debug" />
+  </Project>
+  <Project Path="Godot.Common/Godot.Common.csproj">
+    <BuildType Project="Debug" />
+  </Project>
+  <Project Path="project/Godot.csproj" />
+  <Project Path="project/module/Fodot.Stage/Fodot.Stage.fsproj">
+    <BuildType Project="Debug" />
+  </Project>
+</Solution>

@@ -15,20 +15,20 @@ type ICutscene =
     abstract member FadeOut : unit -> Task<unit>
 
 type CutsceneConfig =
-     {
-          In : ICutscene option
-          Out : ICutscene option
-     }
-     
-     static member From cutscene = {
-          In = Some cutscene
-          Out = Some cutscene
-     }
-     
-     static member None = {
-          In = None
-          Out = None
-     }
+    {
+        In : ICutscene option
+        Out : ICutscene option
+    }
+
+    static member From cutscene = {
+        In = Some cutscene
+        Out = Some cutscene
+    }
+
+    static member None = {
+        In = None
+        Out = None
+    }
 
 [<FScript("cutscene")>]
 type Cutscene(node : Node2D) =
