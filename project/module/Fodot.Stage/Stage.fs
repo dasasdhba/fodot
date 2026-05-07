@@ -3,7 +3,6 @@ namespace Fodot.Stage
 open System.Threading.Tasks
 open Fodot.Async
 open Fodot.Core
-open Fodot.Module.Node
 open Godot
 open Fodot.Common
 
@@ -46,11 +45,12 @@ module Stage =
           cutscene.SetSize stage.Root.Size
           
           if node.GetParent() <> stage.CutsceneRoot then
+               let waiting = node.ToSignalTreeEntered ()
                if node.IsInsideTree() |> not then
                     stage.CutsceneRoot |> Node.addChild node
                else
                     node |> Node.reparentDirectly stage.CutsceneRoot
-               do! node.ToSignalReady ()
+               do! waiting
      }
      
      let fadeIn (cutscene : ICutscene) (stage : Stage) =
@@ -121,11 +121,13 @@ module Stage =
                if n.IsInsideTree () then
                     do! n.ToSignalTreeExited ()
           | None -> ()
-
+          
+          let wait = scene.ToSignalReady ()
           stage.CurrentScene <- Some scene
           stage.Viewport |> Node.addChild scene
-          do! scene.ToSignalReady ()
+          do! wait
           stage.Status <- Ready
+          Logger.push $"Stage {stage.Root.GetPath()} is now at {stage.CurrentScenePath}"
      }
      
      let changeSceneWith (sceneLoader: Task<Node>) (cutscene : CutsceneConfig) (stage : Stage) =
@@ -138,7 +140,7 @@ module Stage =
      let queueChangeScene (path : string) (cutscene : CutsceneConfig) (stage : Stage) = task {
           if stage.Status = Loading then
           #if TOOLS
-               Logger.pushWarn $"{stage.Root} has been queued for changing scene before, changing task to {path} will be cancelled."
+               Logger.pushWarn $"Stage {stage.Root.GetPath()} has been queued for changing scene before, changing task to {path} will be cancelled."
           #endif     
                ()
           else
@@ -147,19 +149,3 @@ module Stage =
      
      let queueReload cutscene stage =
           stage |> queueChangeScene "" cutscene
-          
-// access
-     
-module Node =
-     
-     let tryGetStage (node : Node) =
-          node
-          |> findParentCachedWith (fun p -> p |> FScript.contains<Stage> ) "_fs_parent_stage"
-          |> Option.map (fun p -> p |> FScript.get<Stage> )
-          
-     let getStage (node : Node) =
-          node
-          |> tryGetStage
-          |> Option.defaultWith (fun () -> failwith $"{node} does not have a parent stage.")
-          
-          

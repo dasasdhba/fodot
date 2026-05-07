@@ -11,6 +11,7 @@
         <Compile Include="Cutscene.fs" />
         <Compile Include="CutsceneProvider.fs" />
         <Compile Include="Stage.fs" />
+        <Compile Include="Node.fs" />
         <Compile Include="GlobalStage.fs" />
     </ItemGroup>
 

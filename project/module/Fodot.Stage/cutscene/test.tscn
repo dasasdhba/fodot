@@ -5,6 +5,7 @@
 
 [node name="Test" type="Node" unique_id=1479347889]
 script = ExtResource("1_ni2hr")
+delay = 1.0
 mode = 2
 
 [node name="Fade" parent="." unique_id=170636808 instance=ExtResource("1_i146x")]

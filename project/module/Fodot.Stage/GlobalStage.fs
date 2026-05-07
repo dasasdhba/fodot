@@ -15,7 +15,7 @@ let mutable private instance : Control = null
 let getInstance () =
     instance
     |> Option.ofObj
-    |> Option.map (fun c -> c |> FScript.get<Stage>)
+    |> Option.bind (fun c -> c |> FScript.tryGet<Stage>)
     |> Option.defaultWith (fun _ -> failwith "GlobalStage singleton is not created yet.")
     
 [<FScript("global_stage")>]
@@ -23,15 +23,7 @@ type GlobalStage (node : Control) =
     do if Singleton.attach node &instance then
         Logger.push "GlobalStage loaded."
     
-    let entryCutscene =
-        node
-        |> Node.tryGetNode "%EntryCutscene"
-        |> Option.map (fun n -> n |> FScript.get<CutsceneProvider>)
-        
-    let getEntryCutscene () =
-        entryCutscene
-        |> Option.map (fun c -> c.CreateConfig ())
-        |> Option.defaultValue CutsceneConfig.None
+    let entryCutscene = "%EntryCutscene"
         
     do node.add_Ready (fun _ ->
         let first =
@@ -41,7 +33,8 @@ type GlobalStage (node : Control) =
 #else
             FodotEditor.ProjectMainScene
 #endif
-        let stage = node |> FScript.get<Stage>
-        let cutscene = getEntryCutscene ()
+
+        let stage = node |> FScript.attach<Stage>
+        let cutscene = node |> Node.getCutsceneConfig entryCutscene
         stage |> queueChangeScene first cutscene |> ignore
     )
