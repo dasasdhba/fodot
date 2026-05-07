@@ -30,8 +30,7 @@ enabled=PackedStringArray("res://addons/Fodot/plugin.cfg")
 
 [fodot]
 
-general/assemblies="Fodot.Test
-Fodot.Stage"
+general/assemblies="Fodot.Stage"
 
 [physics]
 

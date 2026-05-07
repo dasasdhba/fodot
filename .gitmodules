@@ -1,0 +1,6 @@
+[submodule "library"]
+	path = library
+	url = git@github.com:dasasdhba/fodot-library.git
+[submodule "project/module"]
+	path = project/module
+	url = git@github.com:dasasdhba/fodot-module.git

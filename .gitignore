@@ -7,3 +7,5 @@ obj
 
 *.sln.DotSettings
 *.sln.DotSettings.user
+
+gui-sock-*

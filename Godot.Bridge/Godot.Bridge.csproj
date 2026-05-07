@@ -1,8 +1,0 @@
-﻿<Project Sdk="Godot.NET.Sdk">
-    <PropertyGroup>
-        <TargetFramework>$(TargetFrameworkVersion)</TargetFramework>
-        <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'android' ">$(AndroidFrameworkVersion)</TargetFramework>
-        <EnableDynamicLoading>true</EnableDynamicLoading>
-        <RootNamespace>GodotBridge</RootNamespace>
-    </PropertyGroup>
-</Project>
