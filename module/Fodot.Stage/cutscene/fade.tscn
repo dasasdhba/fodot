@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://c4546y7d6pvhm"]
+
+[ext_resource type="Script" uid="uid://uvqa7fhs63sb" path="res://module/Fodot.Stage/cutscene/fade.gd" id="1_4tadr"]
+
+[node name="Fade" type="Node2D" unique_id=170636808]
+script = ExtResource("1_4tadr")
+size = Vector2(1152, 648)

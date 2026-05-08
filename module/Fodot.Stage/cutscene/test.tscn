@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://cetnhqtlukraa"]
+
+[ext_resource type="PackedScene" uid="uid://c4546y7d6pvhm" path="res://module/Fodot.Stage/cutscene/fade.tscn" id="1_i146x"]
+[ext_resource type="Script" uid="uid://xykc5xa65knh" path="res://module/Fodot.Stage/cutscene/test.gd" id="1_ni2hr"]
+
+[node name="Test" type="Node" unique_id=1479347889]
+script = ExtResource("1_ni2hr")
+delay = 1.0
+mode = 2
+
+[node name="Fade" parent="." unique_id=170636808 instance=ExtResource("1_i146x")]

@@ -1,11 +1,21 @@
-.idea
-.vscode
+# Godot 4+ specific ignores
+.godot/
+/android/
+export_presets.cfg
 
-.godot
-bin
-obj
+# ide
+
+.editorconfig
+.idea/
+.vscode/
 
 *.sln.DotSettings
-*.sln.DotSettings.user
-
+*.sln.DotSettings.*
 gui-sock-*
+
+# fodot
+
+fodot_build.dat
+
+# tests
+tests/

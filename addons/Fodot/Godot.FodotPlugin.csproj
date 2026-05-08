@@ -1,0 +1,13 @@
+<Project Sdk="Godot.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>$(TargetFrameworkVersion)</TargetFramework>
+        <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'android' ">$(AndroidFrameworkVersion)</TargetFramework>
+        <EnableDynamicLoading>true</EnableDynamicLoading>
+        <RootNamespace>Godot.FodotPlugin</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\library\Fodot.Generator\Fodot.Generator.fsproj" Condition="'$(Configuration)' == 'Debug'" />
+        <ProjectReference Include="..\..\library\Godot.Common\Godot.Common.csproj" />
+    </ItemGroup>
+</Project>

@@ -13,16 +13,22 @@
   <Project Path="library/Fodot.Module/Fodot.Module.fsproj">
     <BuildType Project="Debug" />
   </Project>
-  <Project Path="library/Fodot/Fodot.fsproj" />
+  <Project Path="library/Fodot/Fodot.fsproj" >
     <BuildType Project="Debug" />
+  </Project>
   <Project Path="library/Godot.Bridge/Godot.Bridge.csproj">
     <BuildType Project="Debug" />
   </Project>
   <Project Path="library/Godot.Common/Godot.Common.csproj">
     <BuildType Project="Debug" />
   </Project>
-  <Project Path="project/Godot.csproj" />
-  <Project Path="project/module/Fodot.Stage/Fodot.Stage.fsproj">
+  <Project Path="module/Fodot.Stage/Fodot.Stage.fsproj">
+    <BuildType Project="Debug" />
+  </Project>
+  <Project Path="addons/Fodot/Godot.FodotPlugin.csproj" >
+    <BuildType Project="Debug" />
+  </Project>
+  <Project Path="Godot.csproj" >
     <BuildType Project="Debug" />
   </Project>
 </Solution>

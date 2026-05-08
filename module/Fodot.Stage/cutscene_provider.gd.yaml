@@ -1,0 +1,18 @@
+extends: Node
+fscript: [ "cutscene_provider" ]
+
+property:
+  CutsceneProvider:
+    type: export_category
+
+  in_scene:
+    type: PackedScene
+    nullable: true
+  
+  out_scene:
+    type: PackedScene
+    nullable: true
+
+  reuse_in_if_out_is_null:
+    type: bool
+    value: true

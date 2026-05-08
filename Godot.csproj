@@ -1,0 +1,19 @@
+<Project Sdk="Godot.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>$(TargetFrameworkVersion)</TargetFramework>
+        <TargetFramework Condition=" '$(GodotTargetPlatform)' == 'android' ">$(AndroidFrameworkVersion)</TargetFramework>
+        <EnableDynamicLoading>true</EnableDynamicLoading>
+        <RootNamespace>Godot</RootNamespace>
+        <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    </PropertyGroup>
+    <ItemGroup>
+      <ProjectReference Include="addons\Fodot\Godot.FodotPlugin.csproj" />
+      <ProjectReference Include="library\Fodot\Fodot.fsproj" />
+      <ProjectReference Include="library\Godot.Bridge\Godot.Bridge.csproj" />
+      <ProjectReference Include="library\Godot.Common\Godot.Common.csproj" />
+      <ProjectReference Include="module\Fodot.Stage\Fodot.Stage.fsproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <Compile Include="FodotEntry.cs" />
+    </ItemGroup>
+</Project>

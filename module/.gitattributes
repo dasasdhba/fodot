@@ -1,0 +1,8 @@
+* text=auto
+
+# Godot scene files should stay as-is
+*.tscn text eol=lf
+*.tres text eol=lf
+
+# GDScript
+*.gd text eol=lf

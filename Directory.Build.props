@@ -1,8 +1,27 @@
 <Project>
-    <PropertyGroup>
-        <TargetFrameworkVersion>net10.0</TargetFrameworkVersion>
-        <AndroidFrameworkVersion>net10.0</AndroidFrameworkVersion>
-        <DocumentationFileFlag>false</DocumentationFileFlag>
-        <DocumentationFileFlag Condition = "'$(Configuration)' == 'Debug'">true</DocumentationFileFlag>
-    </PropertyGroup>
+     <PropertyGroup>
+          <TargetFrameworkVersion>net10.0</TargetFrameworkVersion>
+          <AndroidFrameworkVersion>net10.0</AndroidFrameworkVersion>
+          <DocumentationFileFlag>false</DocumentationFileFlag>
+          <DocumentationFileFlag Condition = "'$(Configuration)' == 'Debug'">true</DocumentationFileFlag>
+     </PropertyGroup>
+
+     <!-- GodotProjectDir = this directory = where project.godot lives.
+          All source files under this directory get valid res:// paths. -->
+     <PropertyGroup>
+     <GodotProjectDir>$(MSBuildThisFileDirectory)</GodotProjectDir>
+     <GodotProjectDirBase64 Condition=" $([MSBuild]::VersionGreaterThanOrEquals($(MSBuildAssemblyVersion), '17.3')) ">$([MSBuild]::ConvertToBase64('$(GodotProjectDir)'))</GodotProjectDirBase64>
+
+     <!-- All projects output to the project root's .godot/ directory.
+          This keeps bin/obj out of the res:// tree for all module projects. -->
+     <BaseOutputPath>$(GodotProjectDir).godot\mono\temp\bin\</BaseOutputPath>
+     <OutputPath>$(GodotProjectDir).godot\mono\temp\bin\$(Configuration)\</OutputPath>
+     <BaseIntermediateOutputPath>$(GodotProjectDir).godot\mono\temp\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
+     <IntermediateOutputPath>$(GodotProjectDir).godot\mono\temp\obj\$(MSBuildProjectName)\$(Configuration)\</IntermediateOutputPath>
+     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+
+     <!-- Required for source generators to emit editor-only code (e.g. GetGodotPropertyDefaultValues).
+          Godot.NET.Sdk sets these automatically; Microsoft.NET.Sdk projects need them explicitly. -->
+     <DefineConstants Condition="!$(DefineConstants.Contains('GODOT'))">GODOT;TOOLS;$(DefineConstants)</DefineConstants>
+     </PropertyGroup>
 </Project>

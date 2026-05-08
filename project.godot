@@ -22,15 +22,10 @@ Fodot="*uid://bos17qptdhwfj"
 [dotnet]
 
 project/assembly_name="Godot"
-project/solution_directory="../"
 
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/Fodot/plugin.cfg")
-
-[fodot]
-
-general/assemblies="Fodot.Stage"
 
 [physics]
 

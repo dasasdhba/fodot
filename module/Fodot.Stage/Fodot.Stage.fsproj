@@ -1,0 +1,24 @@
+<Project Sdk="Godot.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>$(TargetFrameworkVersion)</TargetFramework>
+        <GenerateDocumentationFile>$(DocumentationFileFlag)</GenerateDocumentationFile>
+        <RootNamespace>Fodot.Stage</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Bind.fs" />
+        <Compile Include="Cutscene.fs" />
+        <Compile Include="CutsceneProvider.fs" />
+        <Compile Include="Stage.fs" />
+        <Compile Include="Node.fs" />
+        <Compile Include="GlobalStage.fs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\library\Fodot.Async\Fodot.Async.fsproj" />
+        <ProjectReference Include="..\..\library\Godot.Common\Godot.Common.csproj" />
+        <ProjectReference Include="..\..\library\Fodot.Module\Fodot.Module.fsproj" />
+    </ItemGroup>
+
+</Project>

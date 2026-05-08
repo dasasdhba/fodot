@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://dmyavudlxltwl"]
+
+[node name="Stage" type="Control" unique_id=849120772 groups=["fs_stage"]]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="." unique_id=1785821906]
+layout_mode = 0
+offset_right = 1152.0
+offset_bottom = 648.0
+stretch = true
+
+[node name="Viewport" type="SubViewport" parent="SubViewportContainer" unique_id=746523868]
+unique_name_in_owner = true
+handle_input_locally = false
+size = Vector2i(1152, 648)
+render_target_update_mode = 4
+
+[node name="Cutscene" type="Node2D" parent="." unique_id=1012253408]
+unique_name_in_owner = true
+z_index = 1024
