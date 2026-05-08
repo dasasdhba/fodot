@@ -1,7 +1,7 @@
-[submodule "library"]
-	path = library
-	url = git@github.com:dasasdhba/fodot-library.git
 [submodule "module"]
 	path = module
 	url = git@github.com:dasasdhba/fodot-module.git
 
+[submodule "library"]
+	path = library
+	url = git@github.com:dasasdhba/fodot-library.git
