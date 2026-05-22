@@ -22,7 +22,7 @@ static func get_type_name(t):
 		TYPE_STRING:
 			return "string"
 		TYPE_VECTOR2:
-			return "Vecotor2"
+			return "Vector2"
 		TYPE_VECTOR2I:
 			return "Vector2i"
 		TYPE_RECT2:

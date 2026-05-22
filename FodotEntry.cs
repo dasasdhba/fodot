@@ -17,7 +17,8 @@ public partial class FodotEntry : Node
 
     public static HashSet<string> RipFsproj()
     {
-    
+        const string data = "res://system/data/fodot_build.dat";
+        
     #if TOOLS
         
         using var f = FileAccess.Open("res://Godot.csproj", FileAccess.ModeFlags.Read);
@@ -26,14 +27,14 @@ public partial class FodotEntry : Node
             .Select(r => Path.GetFileNameWithoutExtension(r.Value[1..^1]))
             .ToHashSet();
         
-        using var w = FileAccess.Open("res://fodot_build.dat", FileAccess.ModeFlags.Write);
+        using var w = FileAccess.Open(data, FileAccess.ModeFlags.Write);
         foreach (var r in result) w.StoreLine(r);
         
         return result;
         
     #else
     
-        using var f = FileAccess.Open("res://fodot_build.dat", FileAccess.ModeFlags.Read);
+        using var f = FileAccess.Open(data, FileAccess.ModeFlags.Read);
         return f.GetAsText().Split('\n').ToHashSet();
     
     #endif    

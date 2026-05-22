@@ -5,7 +5,7 @@ using System.Linq;
 using Fodot.Generator;
 using Godot.Collections;
 
-namespace Godot;
+namespace Godot.FodotPlugin;
 
 #if TOOLS
 

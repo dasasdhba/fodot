@@ -13,9 +13,10 @@ export_presets.cfg
 *.sln.DotSettings.*
 gui-sock-*
 
-# fodot
+# data
 
-fodot_build.dat
+system/data/**/*.dat
 
 # tests
+
 tests/

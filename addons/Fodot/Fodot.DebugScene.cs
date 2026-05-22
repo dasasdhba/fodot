@@ -1,6 +1,6 @@
 using Godot.Common;
 
-namespace Godot;
+namespace Godot.FodotPlugin;
 
 #if TOOLS
 
