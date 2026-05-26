@@ -39,7 +39,7 @@ public partial class FodotMain
                 {
                     _cachedLib.Add(f, res);
                 }
-                else
+                else if (res.GetClass() != "Resource")
                 {
                     _cachedUnlib.Add(f);
                 }

@@ -92,6 +92,27 @@ static func get_type_name(t):
 		TYPE_NIL:
 			return "null"
 
+func rip_export_props():
+	var result = ""
+	for pd in get_property_list():
+		var usage = pd["usage"]
+		if usage & PROPERTY_USAGE_SCRIPT_VARIABLE == 0:
+			continue
+		
+		var name = pd["name"]
+		if name == "lib" or name == "lib_name":
+			continue
+		
+		var sname = "_%s_str_name" % name
+		result += "    let private %s = new StringName \"%s\"\n" % [sname, name]
+
+		var kname = name.to_camel_case()
+		var typ = pd["type"]
+		var tname = get_type_name(typ)
+	
+		result += "    let %s = _back_lib.Resource |> GodotObject.getAs<%s> %s\n" % [kname, tname, sname]
+	return result
+
 func get_fs_content():
 	var library = get_lib_name()
 	var id = ResourceLoader.get_resource_uid(resource_path)
@@ -106,5 +127,6 @@ func get_fs_content():
 		if type == "null": continue
 		var kname = k.to_camel_case()
 		result += "    let %s = _back_lib.Get<%s>(\"%s\")\n" % [kname, type, k]
+	result += "\n" + rip_export_props()
 	result += "\n    let lib = _back_lib.Lib\n"
 	return result
